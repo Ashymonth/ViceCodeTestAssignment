@@ -47,7 +47,7 @@ namespace CrudTestAssignment.DAL
                                                set [name] = @name
                                                where [id] = @id";
 
-        private const string DeleteCommand = @"delete [dbo].Users] where [id] = @id";
+        private const string DeleteCommand = @"delete [dbo].[Users] where [id] = @id";
 
         public Repository(IOptions<ConnectionStringOptions> options)
         {
