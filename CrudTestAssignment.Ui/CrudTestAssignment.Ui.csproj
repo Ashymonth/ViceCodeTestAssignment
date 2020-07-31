@@ -6,6 +6,10 @@
     <AssemblyName>CrudTestAssignment.Ui</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Prism.Unity" Version="7.2.0.1422" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CrudTestAssignment.DAL\CrudTestAssignment.DAL.csproj" />
   </ItemGroup>
 </Project>
