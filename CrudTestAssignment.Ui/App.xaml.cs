@@ -1,6 +1,8 @@
 ﻿using Prism.Ioc;
 using CrudTestAssignment.Ui.Views;
 using System.Windows;
+using CrudTestAssignment.Ui.Services;
+using CrudTestAssignment.Ui.ViewModels;
 
 namespace CrudTestAssignment.Ui
 {
@@ -16,7 +18,9 @@ namespace CrudTestAssignment.Ui
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
+            containerRegistry.Register<IApiService, ApiService>();
 
+            containerRegistry.RegisterDialog<AddUserView, AddUserViewModel>();
         }
     }
 }

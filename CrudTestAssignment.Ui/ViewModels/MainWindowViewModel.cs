@@ -1,19 +1,38 @@
-﻿using Prism.Mvvm;
+﻿using CrudTestAssignment.DAL.Models;
+using CrudTestAssignment.Ui.Views;
+using Prism.Commands;
+using Prism.Mvvm;
+using Prism.Services.Dialogs;
+using System.Collections.ObjectModel;
 
 namespace CrudTestAssignment.Ui.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
-        private string _title = "Prism Application";
-        public string Title
+        private readonly IDialogService _dialogService;
+
+        public MainWindowViewModel(IDialogService dialogService)
         {
-            get { return _title; }
-            set { SetProperty(ref _title, value); }
+            _dialogService = dialogService;
+
+            Users = new ObservableCollection<User>();
+
+            AddUserCommand = new DelegateCommand(ExecuteAddUserCommand);
         }
 
-        public MainWindowViewModel()
-        {
+        public ObservableCollection<User> Users { get; set; }
 
+        public DelegateCommand AddUserCommand { get; }
+
+        private void ExecuteAddUserCommand()
+        {
+            _dialogService.ShowDialog(nameof(AddUserView), new DialogParameters(), result =>
+                 {
+                     result.Parameters.TryGetValue<User>(nameof(User), out var user);
+
+                     if (result.Result == ButtonResult.OK && user != null)
+                         Users.Add(user);
+                 });
         }
     }
 }

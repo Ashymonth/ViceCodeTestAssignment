@@ -34,18 +34,18 @@ namespace CrudTestAssignment.Ui.Services
         {
             var user = new UserViewModel { Name = userName };
 
-            var response = await _httpClient.PostAsJsonAsync("/users", user);
+            var response = await _httpClient.PostAsJsonAsync("api/v1/users", user);
             return response.StatusCode switch
             {
                 HttpStatusCode.BadRequest => null,
-                HttpStatusCode.OK => await response.Content.ReadAsAsync<User>(),
+                HttpStatusCode.Created => await response.Content.ReadAsAsync<User>(),
                 _ => throw new HttpRequestException("Request exception")
             };
         }
 
         public async Task<User> GetUserByNameAsync(string userName)
         {
-            var response = await _httpClient.GetAsync($"users/{Uri.EscapeDataString(userName)}");
+            var response = await _httpClient.GetAsync($"api/v1/users/{Uri.EscapeDataString(userName)}");
             return response.StatusCode switch
             {
                 HttpStatusCode.NotFound => null,
@@ -56,7 +56,7 @@ namespace CrudTestAssignment.Ui.Services
 
         public async Task<IEnumerable<User>> GetUsersAsync()
         {
-            var response = await _httpClient.GetAsync("/users");
+            var response = await _httpClient.GetAsync("api/v1/users");
             return response.StatusCode switch
             {
                 HttpStatusCode.NoContent => null,
@@ -69,7 +69,7 @@ namespace CrudTestAssignment.Ui.Services
         {
             var user = new UserViewModel { Name = newUserName};
 
-            var response = await _httpClient.PutAsJsonAsync($"/users/{Uri.EscapeDataString(userId.ToString())}", user);
+            var response = await _httpClient.PutAsJsonAsync($"api/v1/users/{Uri.EscapeDataString(userId.ToString())}", user);
             return response.StatusCode switch
             {
                 HttpStatusCode.BadRequest => null,
@@ -81,7 +81,7 @@ namespace CrudTestAssignment.Ui.Services
 
         public async Task<bool> DeleteUserAsync(int userId)
         {
-            var response = await _httpClient.DeleteAsync($"/users/{Uri.EscapeDataString(userId.ToString())}");
+            var response = await _httpClient.DeleteAsync($"api/v1/users/{Uri.EscapeDataString(userId.ToString())}");
             return response.StatusCode switch
             {
                 HttpStatusCode.NotFound => false,
