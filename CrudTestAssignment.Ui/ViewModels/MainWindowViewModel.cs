@@ -18,11 +18,15 @@ namespace CrudTestAssignment.Ui.ViewModels
             Users = new ObservableCollection<User>();
 
             AddUserCommand = new DelegateCommand(ExecuteAddUserCommand);
+
+            GetUserCommand = new DelegateCommand(ExecuteGetUserCommand);
         }
 
         public ObservableCollection<User> Users { get; set; }
 
         public DelegateCommand AddUserCommand { get; }
+
+        public DelegateCommand GetUserCommand { get; }
 
         private void ExecuteAddUserCommand()
         {
@@ -33,6 +37,11 @@ namespace CrudTestAssignment.Ui.ViewModels
                      if (result.Result == ButtonResult.OK && user != null)
                          Users.Add(user);
                  });
+        }
+
+        private void ExecuteGetUserCommand()
+        {
+            _dialogService.ShowDialog(nameof(GetUserView),new DialogParameters(),result => {} );
         }
     }
 }

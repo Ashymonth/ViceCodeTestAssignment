@@ -21,6 +21,8 @@ namespace CrudTestAssignment.Ui
             containerRegistry.Register<IApiService, ApiService>();
 
             containerRegistry.RegisterDialog<AddUserView, AddUserViewModel>();
+
+            containerRegistry.RegisterDialog<GetUserView,GetUserViewModel>();
         }
     }
 }
