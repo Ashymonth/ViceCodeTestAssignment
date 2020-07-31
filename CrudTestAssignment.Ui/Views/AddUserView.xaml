@@ -15,6 +15,15 @@
     mvvm:ViewModelLocator.AutoWireViewModel="True"
     mc:Ignorable="d">
 
+    <mvvm:Dialog.WindowStyle>
+        <Style TargetType="Window">
+            <Setter Property="mvvm:Dialog.WindowStartupLocation" Value="CenterScreen" />
+            <Setter Property="ResizeMode" Value="NoResize"/>
+            <Setter Property="ShowInTaskbar" Value="False"/>
+            <Setter Property="SizeToContent" Value="WidthAndHeight"/>
+        </Style>
+    </mvvm:Dialog.WindowStyle>
+
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 
         <TextBlock Margin="10" Text="{Binding Path=ErrorMessage}" />
