@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CrudTestAssignment.Api</name>
+    </assembly>
+    <members>
+        <member name="M:CrudTestAssignment.Api.Extension.ServiceExtensions.AddSqlConnection(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds a connection to the sql server
+            </summary>
+            <param name="services"></param>
+            <param name="configuration"></param>
+        </member>
+        <member name="M:CrudTestAssignment.Api.Extension.ServiceExtensions.AddLoggerService(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds a logging service
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:CrudTestAssignment.Api.Extension.ServiceExtensions.AddSwagger(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds a swagger documentation
+            </summary>
+            <param name="services"></param>
+        </member>
+    </members>
+</doc>

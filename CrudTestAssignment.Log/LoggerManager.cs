@@ -2,7 +2,7 @@
 
 namespace CrudTestAssignment.Log
 {
-    public class LoggerManager
+    public class LoggerManager : ILoggerManager
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
   
