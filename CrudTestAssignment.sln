@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrudTestAssignment.Log", "C
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "CrudTestAssignment.Database", "CrudTestAssignment.Database\CrudTestAssignment.Database.sqlproj", "{1D613906-35A3-441D-9056-D02C97560737}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrudTestAssignment.Api", "CrudTestAssignment.Api\CrudTestAssignment.Api.csproj", "{F53BC623-6E83-4ED2-B4E5-E685C470647B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{1D613906-35A3-441D-9056-D02C97560737}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D613906-35A3-441D-9056-D02C97560737}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1D613906-35A3-441D-9056-D02C97560737}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{F53BC623-6E83-4ED2-B4E5-E685C470647B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F53BC623-6E83-4ED2-B4E5-E685C470647B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F53BC623-6E83-4ED2-B4E5-E685C470647B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F53BC623-6E83-4ED2-B4E5-E685C470647B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +45,7 @@ Global
 		{A46E997E-D9B1-4122-B4EB-6405AF7CBE4E} = {6D1A6F14-2B22-4D70-9C48-BCBE323A308A}
 		{52472837-05AA-4021-A881-F98DB893A717} = {6D1A6F14-2B22-4D70-9C48-BCBE323A308A}
 		{1D613906-35A3-441D-9056-D02C97560737} = {6D1A6F14-2B22-4D70-9C48-BCBE323A308A}
+		{F53BC623-6E83-4ED2-B4E5-E685C470647B} = {6D1A6F14-2B22-4D70-9C48-BCBE323A308A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CDF90F3A-AE4D-4DB1-9931-6CBC5E76F044}
