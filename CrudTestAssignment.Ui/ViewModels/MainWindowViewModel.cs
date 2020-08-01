@@ -19,6 +19,8 @@ namespace CrudTestAssignment.Ui.ViewModels
 
         private string _errorMessage;
 
+        private bool _progressRingStatus;
+
         private User _selectedUser;
 
         public MainWindowViewModel(IDialogService dialogService, IApiService apiService)
@@ -31,6 +33,8 @@ namespace CrudTestAssignment.Ui.ViewModels
             AddUserCommand = new DelegateCommand(ExecuteAddUserCommand);
 
             GetUserCommand = new DelegateCommand(ExecuteGetUserCommand);
+
+            GetAllUsersCommand = new DelegateCommand(async ()=> await ExecuteGetAllUsersCommand());
 
             UpdateUserCommand = new DelegateCommand(ExecuteUpdateUserCommand, CanExecuteCommand);
 
@@ -45,6 +49,12 @@ namespace CrudTestAssignment.Ui.ViewModels
             set => SetProperty(ref _errorMessage, value);
         }
 
+        public bool ProgressRingStatus
+        {
+            get => _progressRingStatus;
+            set => SetProperty(ref _progressRingStatus, value);
+        }
+
         public User SelectedUser
         {
             get => _selectedUser;
@@ -56,9 +66,12 @@ namespace CrudTestAssignment.Ui.ViewModels
             }
         }
 
+
         public DelegateCommand AddUserCommand { get; }
 
         public DelegateCommand GetUserCommand { get; }
+
+        public DelegateCommand GetAllUsersCommand { get; }
 
         public DelegateCommand UpdateUserCommand { get; }
 
@@ -78,6 +91,26 @@ namespace CrudTestAssignment.Ui.ViewModels
         private void ExecuteGetUserCommand()
         {
             _dialogService.ShowDialog(nameof(GetUserView), new DialogParameters(), result => { });
+        }
+
+        private async Task ExecuteGetAllUsersCommand()
+        {
+            try
+            {
+                ErrorMessage = "";
+
+                ProgressRingStatus = true;
+
+                var result = await _apiService.GetUsersAsync();
+                if (result != null)
+                    Users.AddRange(result);
+
+                ProgressRingStatus = false;
+            }
+            catch (HttpRequestException e)
+            {
+                ErrorMessage = e.Message;
+            }
         }
 
         private void ExecuteUpdateUserCommand()
