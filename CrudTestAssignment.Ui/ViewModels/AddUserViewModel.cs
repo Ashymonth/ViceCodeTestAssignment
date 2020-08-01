@@ -51,11 +51,13 @@ namespace CrudTestAssignment.Ui.ViewModels
 
                 var result = await _apiService.CreateUserAsync(_userName);
                 if (result == null)
-                    ErrorMessage = "User name is required";
+                    ErrorMessage = "User name is empty or user with this name already exist";
+                else
+                {
+                    var dialogParameter = new DialogParameters { { nameof(UserModel), result } };
 
-                var dialogParameter = new DialogParameters { { nameof(UserModel), result } };
-
-                OnRequestClose(new DialogResult(ButtonResult.OK, dialogParameter));
+                    OnRequestClose(new DialogResult(ButtonResult.OK, dialogParameter));
+                }
             }
             catch (HttpRequestException e)
             {

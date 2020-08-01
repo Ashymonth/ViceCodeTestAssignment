@@ -61,7 +61,7 @@ namespace CrudTestAssignment.Ui.ViewModels
 
                 var result = await _apiService.UpdateUserAsync(_user.Id, _newUserName);
                 if (result == null)
-                    ErrorMessage = "Username is not correct or user does not exist";
+                    ErrorMessage = "User name is empty or user with this name already exist";
                 else
                 {
                     var dialogParameter = new DialogParameters { { nameof(UserModel), result } };

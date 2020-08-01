@@ -39,6 +39,7 @@ namespace CrudTestAssignment.Ui.Services
             return response.StatusCode switch
             {
                 HttpStatusCode.BadRequest => null,
+                HttpStatusCode.Conflict => null,
                 HttpStatusCode.Created => await response.Content.ReadAsAsync<UserModel>(),
                 _ => throw new HttpRequestException("Request exception")
             };
@@ -74,6 +75,7 @@ namespace CrudTestAssignment.Ui.Services
             return response.StatusCode switch
             {
                 HttpStatusCode.BadRequest => null,
+                HttpStatusCode.Conflict => null,
                 HttpStatusCode.NotFound => null,
                 HttpStatusCode.OK => await response.Content.ReadAsAsync<UserModel>(),
                 _ => throw new HttpRequestException("Request exception")
