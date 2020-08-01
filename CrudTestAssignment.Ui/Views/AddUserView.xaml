@@ -28,7 +28,9 @@
 
         <TextBlock Margin="10" Text="{Binding Path=ErrorMessage}" />
 
-        <TextBlock Margin="10" Text="Enter a name to add a user " />
+        <TextBlock Margin="10" Text="Enter a name to add a user." />
+
+        <TextBlock Margin="10" Text="Username must be at least 5 characters long and must not be empty." />
 
         <StackPanel>
             <TextBlock Margin="10" Text="User name" />

@@ -47,27 +47,20 @@ namespace CrudTestAssignment.Ui.ViewModels
         {
             try
             {
-                ErrorMessage = "";
-
                 var result = await _apiService.CreateUserAsync(_userName);
-                if (result == null)
-                    ErrorMessage = "User name is empty or user with this name already exist";
-                else
-                {
-                    var dialogParameter = new DialogParameters { { nameof(UserModel), result } };
+                var dialogParameter = new DialogParameters { { nameof(UserModel), result } };
 
-                    OnRequestClose(new DialogResult(ButtonResult.OK, dialogParameter));
-                }
+                OnRequestClose(new DialogResult(ButtonResult.OK, dialogParameter));
             }
-            catch (HttpRequestException e)
+            catch (ServerRequestException ex)
             {
-                ErrorMessage = e.Message;
+                ErrorMessage = ex.Message;
             }
         }
 
         private bool CanExecuteAddUserCommand()
         {
-            return !string.IsNullOrWhiteSpace(_userName);
+            return !string.IsNullOrWhiteSpace(_userName) && _userName.Trim().Length >= 5;
         }
 
         #region Dialog

@@ -78,6 +78,8 @@ namespace CrudTestAssignment.Ui.ViewModels
 
         private void ExecuteAddUserCommand()
         {
+            ErrorMessage = "";
+
             _dialogService.ShowDialog(nameof(AddUserView), new DialogParameters(), result =>
                  {
                      result.Parameters.TryGetValue<UserModel>(nameof(UserModel), out var user);
@@ -94,10 +96,10 @@ namespace CrudTestAssignment.Ui.ViewModels
 
         private async Task ExecuteGetAllUsersCommand()
         {
+            ErrorMessage = "";
+
             try
             {
-                ErrorMessage = "";
-
                 ProgressRingStatus = true;
 
                 var result = await _apiService.GetUsersAsync();
@@ -106,14 +108,16 @@ namespace CrudTestAssignment.Ui.ViewModels
 
                 ProgressRingStatus = false;
             }
-            catch (HttpRequestException e)
+            catch (ServerRequestException ex)
             {
-                ErrorMessage = e.Message;
+                ErrorMessage = ex.Message;
             }
         }
 
         private void ExecuteUpdateUserCommand()
         {
+            ErrorMessage = "";
+
             var index = Users.IndexOf(_selectedUser);
 
             var dialogParameter = new DialogParameters { { nameof(UserModel), _selectedUser } };
@@ -128,7 +132,7 @@ namespace CrudTestAssignment.Ui.ViewModels
                         Users[index] = user;
                 });
             }
-            catch (ArgumentNullException e)
+            catch (ServerRequestException e)
             {
                 ErrorMessage = e.Message;
             }
@@ -136,17 +140,17 @@ namespace CrudTestAssignment.Ui.ViewModels
 
         private async Task ExecuteDeleteUserCommand()
         {
+            ErrorMessage = "";
+
             try
             {
-                ErrorMessage = "";
-
                 var result = await _apiService.DeleteUserAsync(_selectedUser.Id);
                 if (result == false)
                     ErrorMessage = "User not found";
                 else
                     Users.Remove(_selectedUser);
             }
-            catch (HttpRequestException e)
+            catch (ServerRequestException e)
             {
                 ErrorMessage = e.Message;
             }

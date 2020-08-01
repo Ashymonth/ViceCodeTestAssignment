@@ -26,6 +26,7 @@
         <TextBlock Margin="10" Text="{Binding Path=ErrorMessage}" />
 
         <TextBlock Margin="10" Text="Enter your user name to update" />
+        <TextBlock Margin="10" Text="New username must be at least 5 characters long and must not be empty" />
         <TextBox
             Margin="10"
             IsEnabled="False"

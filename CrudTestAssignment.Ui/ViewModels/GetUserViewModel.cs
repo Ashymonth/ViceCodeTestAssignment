@@ -3,7 +3,6 @@ using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace CrudTestAssignment.Ui.ViewModels
@@ -45,10 +44,12 @@ namespace CrudTestAssignment.Ui.ViewModels
         {
             try
             {
+                ResultMessage = "";
+
                 var result = await _apiService.GetUserByNameAsync(_userName);
-                ResultMessage = result == null ? "User not find" : $"User with name: {result.Name} find";
+                ResultMessage = $"User with name: {result.Name} find";
             }
-            catch (HttpRequestException e)
+            catch (ServerRequestException e)
             {
                 ResultMessage = e.Message;
             }

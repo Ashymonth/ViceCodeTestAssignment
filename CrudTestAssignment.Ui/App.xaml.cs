@@ -1,4 +1,5 @@
-﻿using Prism.Ioc;
+﻿using System.Configuration;
+using Prism.Ioc;
 using CrudTestAssignment.Ui.Views;
 using System.Windows;
 using CrudTestAssignment.Ui.Services;
@@ -18,13 +19,19 @@ namespace CrudTestAssignment.Ui
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            containerRegistry.Register<IApiService, ApiService>();
+            var serverUrl = ConfigurationManager.AppSettings["serverUrl"];
+            if (string.IsNullOrWhiteSpace(serverUrl))
+                throw new ConfigurationErrorsException("Missing server url in app.config");
+
+            var apiClient = new ApiService(serverUrl);
+
+            containerRegistry.RegisterInstance(typeof(IApiService), apiClient);
 
             containerRegistry.RegisterDialog<AddUserView, AddUserViewModel>();
 
-            containerRegistry.RegisterDialog<GetUserView,GetUserViewModel>();
+            containerRegistry.RegisterDialog<GetUserView, GetUserViewModel>();
 
-            containerRegistry.RegisterDialog<UpdateUserView,UpdateUserViewModel>();
+            containerRegistry.RegisterDialog<UpdateUserView, UpdateUserViewModel>();
         }
     }
 }

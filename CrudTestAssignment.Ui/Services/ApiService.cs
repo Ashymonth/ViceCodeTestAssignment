@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using CrudTestAssignment.Api.Api.V1.Models;
+using CrudTestAssignment.Ui.Exceptions;
 
 namespace CrudTestAssignment.Ui.Services
 {
@@ -26,44 +27,47 @@ namespace CrudTestAssignment.Ui.Services
     {
         private readonly HttpClient _httpClient;
 
-        public ApiService()
+        public ApiService(string serverUrl)
         {
-            _httpClient = new HttpClient { BaseAddress = new Uri(GetRequestAddress()) };
+            if (string.IsNullOrWhiteSpace(serverUrl))
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(serverUrl));
+
+            _httpClient = new HttpClient { BaseAddress = new Uri(serverUrl, UriKind.Absolute) };
         }
 
         public async Task<UserModel> CreateUserAsync(string userName)
         {
             var user = new UserModel { Name = userName };
 
-            var response = await _httpClient.PostAsJsonAsync("api/v1/users", user);
+            var response = await _httpClient.PostAsJsonAsync("users", user);
             return response.StatusCode switch
             {
-                HttpStatusCode.BadRequest => null,
-                HttpStatusCode.Conflict => null,
+                HttpStatusCode.BadRequest => throw new BadRequestException("Username must be at least 5 characters long and must not be empty"),
+                HttpStatusCode.Conflict => throw new ConflictException("User with this name already exist"),
                 HttpStatusCode.Created => await response.Content.ReadAsAsync<UserModel>(),
-                _ => throw new HttpRequestException("Request exception")
+                _ => throw new ServerRequestException("Request exception")
             };
         }
 
         public async Task<UserModel> GetUserByNameAsync(string userName)
         {
-            var response = await _httpClient.GetAsync($"api/v1/users/{Uri.EscapeDataString(userName)}");
+            var response = await _httpClient.GetAsync($"users/{Uri.EscapeDataString(userName)}");
             return response.StatusCode switch
             {
-                HttpStatusCode.NotFound => null,
+                HttpStatusCode.NotFound => throw new NotFoundException("User with this name not found"),
                 HttpStatusCode.OK => await response.Content.ReadAsAsync<UserModel>(),
-                _ => throw new HttpRequestException("Request exception")
+                _ => throw new ServerRequestException("Request exception")
             };
         }
 
         public async Task<IEnumerable<UserModel>> GetUsersAsync()
         {
-            var response = await _httpClient.GetAsync("api/v1/users");
+            var response = await _httpClient.GetAsync("users");
             return response.StatusCode switch
             {
-                HttpStatusCode.NoContent => null,
+                HttpStatusCode.NoContent => throw new NotFoundException("The database is empty"),
                 HttpStatusCode.OK => await response.Content.ReadAsAsync<IEnumerable<UserModel>>(),
-                _ => throw new HttpRequestException("Request exception")
+                _ => throw new ServerRequestException("Request exception")
             };
         }
 
@@ -71,31 +75,26 @@ namespace CrudTestAssignment.Ui.Services
         {
             var user = new UserModel { Name = newUserName};
 
-            var response = await _httpClient.PutAsJsonAsync($"api/v1/users/{Uri.EscapeDataString(userId.ToString())}", user);
+            var response = await _httpClient.PutAsJsonAsync($"users/{Uri.EscapeDataString(userId.ToString())}", user);
             return response.StatusCode switch
             {
-                HttpStatusCode.BadRequest => null,
-                HttpStatusCode.Conflict => null,
-                HttpStatusCode.NotFound => null,
+                HttpStatusCode.BadRequest => throw new BadRequestException("Username must be at least 5 characters long and must not be empty"),
+                HttpStatusCode.Conflict => throw new ConflictException("User with this name already exist"),
+                HttpStatusCode.NotFound => throw new NotFoundException("User with this name not found"),
                 HttpStatusCode.OK => await response.Content.ReadAsAsync<UserModel>(),
-                _ => throw new HttpRequestException("Request exception")
+                _ => throw new ServerRequestException("Request exception")
             };
         }
 
         public async Task<bool> DeleteUserAsync(int userId)
         {
-            var response = await _httpClient.DeleteAsync($"api/v1/users/{Uri.EscapeDataString(userId.ToString())}");
+            var response = await _httpClient.DeleteAsync($"users/{Uri.EscapeDataString(userId.ToString())}");
             return response.StatusCode switch
             {
-                HttpStatusCode.NotFound => false,
+                HttpStatusCode.NotFound => throw new NotFoundException("User not found"),
                 HttpStatusCode.NoContent => true,
-                _ => throw new HttpRequestException("Request exception")
+                _ => throw new ServerRequestException("Request exception")
             };
-        }
-
-        private static string GetRequestAddress()
-        {
-            return ConfigurationManager.AppSettings["localhost"];
         }
     }
 }

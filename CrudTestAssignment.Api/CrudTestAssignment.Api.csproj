@@ -8,6 +8,10 @@
     <DocumentationFile>..\CrudTestAssignment.Api\bin\release\netcoreapp3.1\CrudTestAssignment.Api.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>..\CrudTestAssignment.Api\bin\debug\netcoreapp3.1\CrudTestAssignment.Api.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
   </ItemGroup>

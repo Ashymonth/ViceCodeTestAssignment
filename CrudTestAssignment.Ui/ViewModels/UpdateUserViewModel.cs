@@ -1,12 +1,10 @@
-﻿using CrudTestAssignment.DAL.Models;
+﻿using CrudTestAssignment.Api.Api.V1.Models;
 using CrudTestAssignment.Ui.Services;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
-using CrudTestAssignment.Api.Api.V1.Models;
 
 namespace CrudTestAssignment.Ui.ViewModels
 {
@@ -60,25 +58,20 @@ namespace CrudTestAssignment.Ui.ViewModels
                 ErrorMessage = "";
 
                 var result = await _apiService.UpdateUserAsync(_user.Id, _newUserName);
-                if (result == null)
-                    ErrorMessage = "User name is empty or user with this name already exist";
-                else
                 {
                     var dialogParameter = new DialogParameters { { nameof(UserModel), result } };
-
                     OnRequestClose(new DialogResult(ButtonResult.OK, dialogParameter));
                 }
             }
-            catch (HttpRequestException e)
+            catch (ServerRequestException ex)
             {
-                ErrorMessage = e.Message;
+                ErrorMessage = ex.Message;
             }
-
         }
 
         private bool CanExecuteUpdateUserCommand()
         {
-            return !string.IsNullOrWhiteSpace(_newUserName);
+            return !string.IsNullOrWhiteSpace(_newUserName) && _userName.Trim().Length >= 5;
         }
 
         #region Dialog
