@@ -1,22 +1,30 @@
-﻿using System;
-using CrudTestAssignment.DAL.Models;
+﻿using CrudTestAssignment.DAL.Models;
+using CrudTestAssignment.Ui.Services;
 using CrudTestAssignment.Ui.Views;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
+using System;
 using System.Collections.ObjectModel;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace CrudTestAssignment.Ui.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
+        private readonly IApiService _apiService;
+
         private readonly IDialogService _dialogService;
+
+        private string _errorMessage;
 
         private User _selectedUser;
 
-        public MainWindowViewModel(IDialogService dialogService)
+        public MainWindowViewModel(IDialogService dialogService, IApiService apiService)
         {
             _dialogService = dialogService;
+            _apiService = apiService;
 
             Users = new ObservableCollection<User>();
 
@@ -24,10 +32,18 @@ namespace CrudTestAssignment.Ui.ViewModels
 
             GetUserCommand = new DelegateCommand(ExecuteGetUserCommand);
 
-            UpdateUserCommand = new DelegateCommand(ExecuteUpdateUserCommand, CanExecuteUpdateUserCommand);
+            UpdateUserCommand = new DelegateCommand(ExecuteUpdateUserCommand, CanExecuteCommand);
+
+            DeleteUserCommand = new DelegateCommand(async ()=> await ExecuteDeleteUserCommand(),CanExecuteCommand);
         }
 
         public ObservableCollection<User> Users { get; set; }
+
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set => SetProperty(ref _errorMessage, value);
+        }
 
         public User SelectedUser
         {
@@ -36,6 +52,7 @@ namespace CrudTestAssignment.Ui.ViewModels
             {
                 SetProperty(ref _selectedUser, value);
                 UpdateUserCommand.RaiseCanExecuteChanged();
+                DeleteUserCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -44,6 +61,8 @@ namespace CrudTestAssignment.Ui.ViewModels
         public DelegateCommand GetUserCommand { get; }
 
         public DelegateCommand UpdateUserCommand { get; }
+
+        public DelegateCommand DeleteUserCommand { get; }
 
         private void ExecuteAddUserCommand()
         {
@@ -79,11 +98,29 @@ namespace CrudTestAssignment.Ui.ViewModels
             }
             catch (ArgumentNullException e)
             {
-                
+                ErrorMessage = e.Message;
             }
         }
 
-        private bool CanExecuteUpdateUserCommand()
+        private async Task ExecuteDeleteUserCommand()
+        {
+            try
+            {
+                ErrorMessage = "";
+
+                var result = await _apiService.DeleteUserAsync(_selectedUser.Id);
+                if (result == false)
+                    ErrorMessage = "User not found";
+                else
+                    Users.Remove(_selectedUser);
+            }
+            catch (HttpRequestException e)
+            {
+                ErrorMessage = e.Message;
+            }
+        }
+
+        private bool CanExecuteCommand()
         {
             return _selectedUser != null;
         }

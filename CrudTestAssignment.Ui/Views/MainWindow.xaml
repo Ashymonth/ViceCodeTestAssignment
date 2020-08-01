@@ -36,6 +36,16 @@
                 Command="{Binding Path=UpdateUserCommand}"
                 Content="Update user" />
 
+            <Button
+                Margin="10"
+                Command="{Binding Path=DeleteUserCommand}"
+                Content="Delete user" />
+
+            <TextBlock
+                Margin="10"
+                VerticalAlignment="Center"
+                Text="{Binding Path=ErrorMessage}" />
+
         </StackPanel>
 
         <ListView
