@@ -26,6 +26,17 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        /// <summary>
+        /// Adds user to the database and send his to client.
+        /// </summary>
+        /// <remarks>
+        /// Get/api/v1/users/createUser{"name" : "example"}
+        /// </remarks>
+        /// <param name="model">A user to add view model</param>
+        /// <param name="cancellationToken">Cancel operation</param>
+        /// <response code="201">If user name not null or whitespace</response>
+        /// <response code="400">If user name null or whitespace</response>
+        /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(User), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -48,6 +59,17 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
             return Created(Url.RouteUrl("GetByName", new { userName = user.Name }), user);
         }
 
+        /// <summary>
+        /// Returns the user from the database.
+        /// </summary>
+        /// <remarks>
+        /// Get/api/v1/users/userId
+        /// </remarks>
+        /// <param name="userName">A user to return</param>
+        /// <param name="cancellationToken">Cancel operation</param>
+        /// <response code="200">If the user was found</response>
+        /// <response code="404">If the user was not found</response>
+        /// <returns></returns>
         [HttpGet("{userName}", Name = "GetByName")]
         [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -62,6 +84,16 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
             return NotFound($"User with with name {userName} not found");
         }
 
+        /// <summary>
+        /// Returns all users from the database.
+        /// </summary>
+        /// <remarks>
+        /// Get/api/v1/users/all
+        /// </remarks>
+        /// <param name="cancellationToken">Cancel operation</param>
+        /// <response code="200">If the database is not empty</response>
+        /// <response code="404">If the database is empty</response>
+
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<User>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -74,6 +106,19 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Update the user in the database.
+        /// </summary>
+        /// <remarks>
+        /// Put/api/v1/users/userId
+        /// </remarks>
+        /// <param name="model">User view model</param>
+        /// <param name="cancellationToken">Cancel operation</param>
+        /// <param name="userId">User id</param>
+        /// <response code="200">If the user was found and updated</response>
+        /// <response code="400">If the user model was invalid</response>
+        /// <response code="404">If the user was not not found or not updated</response>
+        /// <returns></returns>
         [HttpPut("{userId}")]
         [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -100,6 +145,17 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
             return Ok(user);
         }
 
+        /// <summary>
+        /// Delete the user in the database.
+        /// </summary>
+        /// <remarks>
+        /// Delete/api/v1/users/userId
+        /// </remarks>
+        /// <param name="userId">User id</param>
+        /// <param name="cancellationToken">Cancel operation</param>
+        /// <response code="204">If the user was found and deleted</response>
+        /// <response code="404">If the user was not not found</response>
+        /// <returns></returns>
         [HttpDelete("{userId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
