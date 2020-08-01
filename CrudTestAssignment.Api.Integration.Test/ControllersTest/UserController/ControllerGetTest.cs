@@ -1,5 +1,4 @@
-﻿using CrudTestAssignment.DAL.Models;
-using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Microsoft.AspNetCore.Mvc.Testing;
 using System;
 using System.Net;
 using System.Net.Http;

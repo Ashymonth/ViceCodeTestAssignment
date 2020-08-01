@@ -1,5 +1,4 @@
-﻿using CrudTestAssignment.DAL.Models;
-using CrudTestAssignment.Ui.Services;
+﻿using CrudTestAssignment.Ui.Services;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;

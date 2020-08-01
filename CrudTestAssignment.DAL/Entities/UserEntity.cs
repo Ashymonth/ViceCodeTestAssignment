@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CrudTestAssignment.DAL.Models
+namespace CrudTestAssignment.DAL.Entities
 {
     public class UserEntity
     {

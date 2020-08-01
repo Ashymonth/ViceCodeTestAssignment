@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using CrudTestAssignment.DAL.Models;
+using CrudTestAssignment.DAL.Entities;
 
 namespace CrudTestAssignment.DAL
 {
