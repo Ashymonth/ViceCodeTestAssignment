@@ -30,12 +30,19 @@
                 Margin="10"
                 Command="{Binding Path=GetUserCommand}"
                 Content="Get user" />
+
+            <Button
+                Margin="10"
+                Command="{Binding Path=UpdateUserCommand}"
+                Content="Update user" />
+
         </StackPanel>
 
         <ListView
             Grid.Row="1"
             Margin="10"
-            ItemsSource="{Binding Path=Users}">
+            ItemsSource="{Binding Path=Users}"
+            SelectedItem="{Binding Path=SelectedUser}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn DisplayMemberBinding="{Binding Path=Name}" Header="User name" />

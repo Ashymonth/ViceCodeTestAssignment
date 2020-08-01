@@ -18,9 +18,9 @@
     <mvvm:Dialog.WindowStyle>
         <Style TargetType="Window">
             <Setter Property="mvvm:Dialog.WindowStartupLocation" Value="CenterScreen" />
-            <Setter Property="ResizeMode" Value="NoResize"/>
-            <Setter Property="ShowInTaskbar" Value="False"/>
-            <Setter Property="SizeToContent" Value="WidthAndHeight"/>
+            <Setter Property="ResizeMode" Value="NoResize" />
+            <Setter Property="ShowInTaskbar" Value="False" />
+            <Setter Property="SizeToContent" Value="WidthAndHeight" />
         </Style>
     </mvvm:Dialog.WindowStyle>
 
@@ -41,7 +41,8 @@
             <Button
                 Margin="10"
                 Command="{Binding Path=AddUserCommand}"
-                Content="Add user" />
+                Content="Add user"
+                IsDefault="True" />
         </StackPanel>
     </StackPanel>
 
