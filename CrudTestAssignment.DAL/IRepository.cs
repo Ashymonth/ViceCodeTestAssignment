@@ -7,13 +7,13 @@ namespace CrudTestAssignment.DAL
 {
     public interface IRepository
     {
-        Task<User> CreateAsync(User user, CancellationToken cancellationToken);
+        Task<UserEntity> CreateAsync(UserEntity user, CancellationToken cancellationToken);
 
-        Task<User> GetByNameAsync(string userName, CancellationToken cancellationToken);
+        Task<UserEntity> GetByNameAsync(string userName, CancellationToken cancellationToken);
 
-        Task<User> GetByIdAsync(int userId, CancellationToken cancellationToken);
+        Task<UserEntity> GetByIdAsync(int userId, CancellationToken cancellationToken);
 
-        Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken);
+        Task<IEnumerable<UserEntity>> GetAllAsync(CancellationToken cancellationToken);
 
         Task UpdateAsync(int userId, string name, CancellationToken cancellationToken);
 

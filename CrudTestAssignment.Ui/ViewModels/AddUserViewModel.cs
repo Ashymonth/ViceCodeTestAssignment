@@ -6,6 +6,7 @@ using Prism.Services.Dialogs;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using CrudTestAssignment.Api.Api.V1.Models;
 
 namespace CrudTestAssignment.Ui.ViewModels
 {
@@ -52,7 +53,7 @@ namespace CrudTestAssignment.Ui.ViewModels
                 if (result == null)
                     ErrorMessage = "User name is required";
 
-                var dialogParameter = new DialogParameters { { nameof(User), result } };
+                var dialogParameter = new DialogParameters { { nameof(UserModel), result } };
 
                 OnRequestClose(new DialogResult(ButtonResult.OK, dialogParameter));
             }

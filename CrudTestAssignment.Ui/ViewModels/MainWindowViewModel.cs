@@ -1,4 +1,4 @@
-﻿using CrudTestAssignment.DAL.Models;
+﻿using CrudTestAssignment.Api.Api.V1.Models;
 using CrudTestAssignment.Ui.Services;
 using CrudTestAssignment.Ui.Views;
 using Prism.Commands;
@@ -21,14 +21,14 @@ namespace CrudTestAssignment.Ui.ViewModels
 
         private bool _progressRingStatus;
 
-        private User _selectedUser;
+        private UserModel _selectedUser;
 
         public MainWindowViewModel(IDialogService dialogService, IApiService apiService)
         {
             _dialogService = dialogService;
             _apiService = apiService;
 
-            Users = new ObservableCollection<User>();
+            Users = new ObservableCollection<UserModel>();
 
             AddUserCommand = new DelegateCommand(ExecuteAddUserCommand);
 
@@ -41,7 +41,7 @@ namespace CrudTestAssignment.Ui.ViewModels
             DeleteUserCommand = new DelegateCommand(async ()=> await ExecuteDeleteUserCommand(),CanExecuteCommand);
         }
 
-        public ObservableCollection<User> Users { get; set; }
+        public ObservableCollection<UserModel> Users { get; set; }
 
         public string ErrorMessage
         {
@@ -55,7 +55,7 @@ namespace CrudTestAssignment.Ui.ViewModels
             set => SetProperty(ref _progressRingStatus, value);
         }
 
-        public User SelectedUser
+        public UserModel SelectedUser
         {
             get => _selectedUser;
             set
@@ -65,7 +65,6 @@ namespace CrudTestAssignment.Ui.ViewModels
                 DeleteUserCommand.RaiseCanExecuteChanged();
             }
         }
-
 
         public DelegateCommand AddUserCommand { get; }
 
@@ -81,7 +80,7 @@ namespace CrudTestAssignment.Ui.ViewModels
         {
             _dialogService.ShowDialog(nameof(AddUserView), new DialogParameters(), result =>
                  {
-                     result.Parameters.TryGetValue<User>(nameof(User), out var user);
+                     result.Parameters.TryGetValue<UserModel>(nameof(UserModel), out var user);
 
                      if (result.Result == ButtonResult.OK && user != null)
                          Users.Add(user);
@@ -117,13 +116,13 @@ namespace CrudTestAssignment.Ui.ViewModels
         {
             var index = Users.IndexOf(_selectedUser);
 
-            var dialogParameter = new DialogParameters { { nameof(User), _selectedUser } };
+            var dialogParameter = new DialogParameters { { nameof(UserModel), _selectedUser } };
 
             try
             {
                 _dialogService.ShowDialog(nameof(UpdateUserView), dialogParameter, result =>
                 {
-                    result.Parameters.TryGetValue<User>(nameof(User), out var user);
+                    result.Parameters.TryGetValue<UserModel>(nameof(UserModel), out var user);
 
                     if (result.Result == ButtonResult.OK && user != null)
                         Users[index] = user;

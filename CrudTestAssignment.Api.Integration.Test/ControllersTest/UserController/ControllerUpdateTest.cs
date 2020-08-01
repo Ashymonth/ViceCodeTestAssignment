@@ -30,8 +30,8 @@ namespace CrudTestAssignment.Api.Integration.Test.ControllersTest.UserController
             var expected = Guid.NewGuid().ToString();
 
             // Act
-            var updateResponse = await client.PutAsJsonAsync($"{methodToCall}/{user.Id}", new UserViewModel{ Name = expected});
-            var actual = await updateResponse.Content.ReadAsAsync<User>();
+            var updateResponse = await client.PutAsJsonAsync($"{methodToCall}/{user.Id}", new UserModel { Name = expected });
+            var actual = await updateResponse.Content.ReadAsAsync<UserModel>();
 
             //Assert
             updateResponse.EnsureSuccessStatusCode();
@@ -51,7 +51,7 @@ namespace CrudTestAssignment.Api.Integration.Test.ControllersTest.UserController
             const string methodToCall = "/api/v1/users";
 
             // Act
-            var updateResponse = await client.PutAsJsonAsync($"{methodToCall}/0", new UserViewModel{ Name = Guid.NewGuid().ToString()});
+            var updateResponse = await client.PutAsJsonAsync($"{methodToCall}/0", new UserModel { Name = Guid.NewGuid().ToString() });
 
             //Assert
             Assert.Equal(HttpStatusCode.NotFound, updateResponse.StatusCode);
@@ -69,7 +69,7 @@ namespace CrudTestAssignment.Api.Integration.Test.ControllersTest.UserController
             const string expected = "";
 
             // Act
-            var updateResponse = await client.PutAsJsonAsync($"{methodToCall}/{user.Id}", new UserViewModel{ Name = expected});
+            var updateResponse = await client.PutAsJsonAsync($"{methodToCall}/{user.Id}", new UserModel { Name = expected });
 
             //Assert
 

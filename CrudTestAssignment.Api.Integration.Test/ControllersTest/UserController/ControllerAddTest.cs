@@ -25,14 +25,14 @@ namespace CrudTestAssignment.Api.Integration.Test.ControllersTest.UserController
         {
             // Arrange
             var client = _factory.CreateClient();
-            var expected = new UserViewModel
+            var expected = new UserModel
             {
                 Name = Guid.NewGuid().ToString()
             };
 
             // Act
             var response = await client.PostAsJsonAsync(MethodToCall, expected);
-            var actual = await response.Content.ReadAsAsync<User>();
+            var actual = await response.Content.ReadAsAsync<UserModel>();
 
             // Assert
             response.EnsureSuccessStatusCode();
@@ -49,7 +49,7 @@ namespace CrudTestAssignment.Api.Integration.Test.ControllersTest.UserController
         {
             // Arrange
             var client = _factory.CreateClient();
-            var expected = new UserViewModel
+            var expected = new UserModel
             {
                 Name = null
             };

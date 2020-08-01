@@ -13,18 +13,6 @@ namespace CrudTestAssignment.DAL
     {
         private readonly string _connectionString;
 
-        private const string AddUserProcedureName = "AddUser";
-
-        private const string GetByIdProcedureName = "GetUserById";
-
-        private const string GetAllProcedureName = "GetAllUsers";
-
-        private const string GetByNameProcedureName = "GetUserByName";
-
-        private const string UpdateProcedureName = "UpdateUser";
-
-        private const string DeleteProcedureName = @"DeleteUser";
-
         public Repository(string connectionString)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
@@ -33,15 +21,17 @@ namespace CrudTestAssignment.DAL
             _connectionString = connectionString;
         }
 
-        public async Task<User> CreateAsync(User user, CancellationToken cancellationToken)
+        public async Task<UserEntity> CreateAsync(UserEntity user, CancellationToken cancellationToken)
         {
             try
             {
+                user.CreatedDate = DateTime.Now;
+
                 await using (var connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync(cancellationToken);
 
-                    await using (var command = new SqlCommand(AddUserProcedureName, connection))
+                    await using (var command = new SqlCommand(StoredProcedures.Users.AddUserProcedureName, connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
 
@@ -59,19 +49,19 @@ namespace CrudTestAssignment.DAL
             catch (SqlException ex)
             {
                 if (ex.Number == 2601)
-                    throw new DuplicateUserNameException($"User with name {user.Name} already exist");
+                    throw new DuplicateUserNameException($"UserEntity with name {user.Name} already exist");
                 
                 throw;
             }
         }
 
-        public async Task<User> GetByNameAsync(string userName, CancellationToken cancellationToken)
+        public async Task<UserEntity> GetByNameAsync(string userName, CancellationToken cancellationToken)
         {
             await using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
 
-                await using (var command = new SqlCommand(GetByNameProcedureName, connection))
+                await using (var command = new SqlCommand(StoredProcedures.Users.GetByNameProcedureName, connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
@@ -93,13 +83,13 @@ namespace CrudTestAssignment.DAL
             return null;
         }
 
-        public async Task<User> GetByIdAsync(int userId, CancellationToken cancellationToken)
+        public async Task<UserEntity> GetByIdAsync(int userId, CancellationToken cancellationToken)
         {
             await using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
 
-                await using (var command = new SqlCommand(GetByIdProcedureName, connection))
+                await using (var command = new SqlCommand(StoredProcedures.Users.GetByIdProcedureName, connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
@@ -121,15 +111,15 @@ namespace CrudTestAssignment.DAL
             return null;
         }
 
-        public async Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<UserEntity>> GetAllAsync(CancellationToken cancellationToken)
         {
-            var users = default(List<User>);
+            var users = default(List<UserEntity>);
 
             await using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
 
-                await using (var command = new SqlCommand(GetAllProcedureName, connection))
+                await using (var command = new SqlCommand(StoredProcedures.Users.GetAllProcedureName, connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
@@ -137,7 +127,7 @@ namespace CrudTestAssignment.DAL
                     {
                         if (result.HasRows)
                         {
-                            users = new List<User>(result.FieldCount);
+                            users = new List<UserEntity>(result.FieldCount);
                             while (await result.ReadAsync(cancellationToken))
                             {
                                 var user = GetUser(result);
@@ -157,7 +147,7 @@ namespace CrudTestAssignment.DAL
             {
                 await connection.OpenAsync(cancellationToken);
 
-                await using (var command = new SqlCommand(UpdateProcedureName, connection))
+                await using (var command = new SqlCommand(StoredProcedures.Users.UpdateProcedureName, connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
@@ -176,7 +166,7 @@ namespace CrudTestAssignment.DAL
             {
                 await connection.OpenAsync(cancellationToken);
 
-                await using (var command = new SqlCommand(DeleteProcedureName, connection))
+                await using (var command = new SqlCommand(StoredProcedures.Users.DeleteProcedureName, connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
@@ -187,13 +177,13 @@ namespace CrudTestAssignment.DAL
             }
         }
 
-        private User GetUser(IDataRecord dataRecord)
+        private UserEntity GetUser(IDataRecord dataRecord)
         {
-            var user = new User
+            var user = new UserEntity
             {
-                Id = dataRecord.GetInt32(dataRecord.GetOrdinal(nameof(User.Id))),
-                Name = dataRecord.GetString(dataRecord.GetOrdinal(nameof(User.Name))),
-                CreatedDate = dataRecord.GetDateTime(dataRecord.GetOrdinal(nameof(User.CreatedDate)))
+                Id = dataRecord.GetInt32(dataRecord.GetOrdinal(nameof(UserEntity.Id))),
+                Name = dataRecord.GetString(dataRecord.GetOrdinal(nameof(UserEntity.Name))),
+                CreatedDate = dataRecord.GetDateTime(dataRecord.GetOrdinal(nameof(UserEntity.CreatedDate)))
             };
 
             return user;

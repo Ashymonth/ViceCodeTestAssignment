@@ -1,5 +1,4 @@
-﻿using CrudTestAssignment.Log;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
 using System.IO;
@@ -9,13 +8,6 @@ namespace CrudTestAssignment.Api.Extension
 {
     public static class ServiceExtensions
     {
-        /// <summary>
-        /// Adds a logging service
-        /// </summary>
-        /// <param name="services"></param>
-        public static void AddLoggerService(this IServiceCollection services) =>
-            services.AddScoped<ILoggerManager, LoggerManager>();
-
         /// <summary>
         /// Adds a swagger documentation
         /// </summary>

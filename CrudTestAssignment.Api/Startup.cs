@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NLog;
-using System.IO;
 
 namespace CrudTestAssignment.Api
 {
@@ -16,9 +14,6 @@ namespace CrudTestAssignment.Api
 
         public Startup(IConfiguration configuration)
         {
-            LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(),
-                "/nlog.config"));
-
             Configuration = configuration;
         }
 
@@ -29,8 +24,6 @@ namespace CrudTestAssignment.Api
             services.AddSwagger();
 
             services.AddOptions();
-
-            services.AddLoggerService();
 
             services.AddTransient<IRepository, Repository>(provider => new Repository(connectionString));
 

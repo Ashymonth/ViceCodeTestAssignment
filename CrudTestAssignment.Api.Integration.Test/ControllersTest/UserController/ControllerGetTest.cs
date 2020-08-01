@@ -4,6 +4,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using CrudTestAssignment.Api.Api.V1.Models;
 using Xunit;
 
 namespace CrudTestAssignment.Api.Integration.Test.ControllersTest.UserController
@@ -28,7 +29,7 @@ namespace CrudTestAssignment.Api.Integration.Test.ControllersTest.UserController
 
             //Act
             var response = await client.GetAsync($"{methodToCall}/{expected.Name}");
-            var actual = await response.Content.ReadAsAsync<User>();
+            var actual = await response.Content.ReadAsAsync<UserModel>();
 
             //Assert
             response.EnsureSuccessStatusCode();

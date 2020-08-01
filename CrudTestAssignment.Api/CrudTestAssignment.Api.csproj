@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Users\Ashym\source\repos\CrudTestAssignment\CrudTestAssignment.Api\CrudTestAssignment.Api.xml</DocumentationFile>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>..\CrudTestAssignment.Api\bin\release\netcoreapp3.1\CrudTestAssignment.Api.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,7 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CrudTestAssignment.DAL\CrudTestAssignment.DAL.csproj" />
-    <ProjectReference Include="..\CrudTestAssignment.Log\CrudTestAssignment.Log.csproj" />
   </ItemGroup>
 
   <ItemGroup>

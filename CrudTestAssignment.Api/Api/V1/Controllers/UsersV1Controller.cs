@@ -1,14 +1,14 @@
-﻿using CrudTestAssignment.DAL;
-using CrudTestAssignment.DAL.Models;
-using CrudTestAssignment.Log;
+﻿using CrudTestAssignment.Api.Api.V1.Models;
+using CrudTestAssignment.DAL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
-using CrudTestAssignment.Api.Api.V1.Models;
 
 namespace CrudTestAssignment.Api.Api.V1.Controllers
 {
@@ -19,9 +19,9 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
     {
         private readonly IRepository _repository;
 
-        private readonly ILoggerManager _logger;
+        private readonly ILogger<UsersV1Controller> _logger;
 
-        public UsersV1Controller(IRepository repository, ILoggerManager logger)
+        public UsersV1Controller(IRepository repository, ILogger<UsersV1Controller> logger)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -37,27 +37,40 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
         /// <param name="cancellationToken">Cancel operation</param>
         /// <response code="201">If user name not null or whitespace</response>
         /// <response code="400">If user name null or whitespace</response>
+        /// <response code="409">If user with this name already exist</response>
         /// <returns></returns>
         [HttpPost]
-        [ProducesResponseType(typeof(User), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(UserModel), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateUser([FromBody] UserViewModel model, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> CreateUser([FromBody] UserModel model, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                _logger.LogError("Model was invalid");
-                return BadRequest("User name is required");
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Model was invalid");
+                    return BadRequest("User name is required");
+                }
+
+                var existUser = await _repository.GetByNameAsync(model.Name, cancellationToken);
+                if (existUser != null)
+                {
+                    _logger.LogError("User with this name already exist");
+                    return Conflict("User with this name already exist");
+                }
+
+                var user = Mapper.Mapper.MapToEntity(model);
+
+                user = await _repository.CreateAsync(user, cancellationToken);
+
+                return Created(Url.RouteUrl("GetByName", new { userName = user.Name }), Mapper.Mapper.MapToModel(user));
             }
-
-            var user = new User
+            catch (SqlException e)
             {
-                CreatedDate = DateTime.Now,
-                Name = model.Name
-
-            };
-            user = await _repository.CreateAsync(user, cancellationToken);
-
-            return Created(Url.RouteUrl("GetByName", new { userName = user.Name }), user);
+                _logger.LogWarning("User with this name already exist");
+                return Conflict("User with this name already exist");
+            }
         }
 
         /// <summary>
@@ -72,13 +85,13 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
         /// <response code="404">If the user was not found</response>
         /// <returns></returns>
         [HttpGet("{userName}", Name = "GetByName")]
-        [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetUserByNameAsync(string userName, CancellationToken cancellationToken)
         {
             var result = await _repository.GetByNameAsync(userName, cancellationToken);
             if (result != null)
-                return Ok(result);
+                return Ok(Mapper.Mapper.MapToModel(result));
 
             _logger.LogError($"User with with name {userName} not found");
 
@@ -96,13 +109,13 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
         /// <response code="404">If the database is empty</response>
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<User>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<UserModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> GetAllUsersAsync(CancellationToken cancellationToken)
         {
             var result = await _repository.GetAllAsync(cancellationToken);
             if (result != null)
-                return Ok(result);
+                return Ok(Mapper.Mapper.MapToModels(result));
 
             return NoContent();
         }
@@ -119,31 +132,48 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
         /// <response code="200">If the user was found and updated</response>
         /// <response code="400">If the user model was invalid</response>
         /// <response code="404">If the user was not not found or not updated</response>
+        /// <response code="409">If user with this name already exist</response>
         /// <returns></returns>
         [HttpPut("{userId}")]
-        [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
 
-        public async Task<IActionResult> UpdateUser(int userId, [FromBody] UserViewModel model, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateUser(int userId, [FromBody] UserModel model, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                _logger.LogError("Model was not valid");
-                return BadRequest("Model was not valid");
-            }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Model was not valid");
+                    return BadRequest("Model was not valid");
+                }
 
-            var user = await _repository.GetByIdAsync(userId, cancellationToken);
-            if (user == null)
+                var user = await _repository.GetByIdAsync(userId, cancellationToken);
+                if (user == null)
+                {
+                    _logger.LogError($"User with id {userId} not found");
+                    return NotFound($"User with id {userId} not found");
+                }
+
+                var existUser = await _repository.GetByNameAsync(model.Name,cancellationToken);
+                if (existUser != null)
+                {
+                    _logger.LogError("User with this name already exist");
+                    return Conflict("User with this name already exist");
+                }
+
+                await _repository.UpdateAsync(user.Id, model.Name, cancellationToken);
+                user.Name = model.Name;
+
+                return Ok(Mapper.Mapper.MapToModel(user));
+            }
+            catch (SqlException e)
             {
-                _logger.LogError($"User with id {userId} not found");
-                return NotFound($"User with id {userId} not found");
+                _logger.LogWarning("User with this name already exist");
+                return Conflict("User with this name already exist");
             }
-
-            await _repository.UpdateAsync(user.Id, model.Name, cancellationToken);
-            user.Name = model.Name;
-
-            return Ok(user);
         }
 
         /// <summary>

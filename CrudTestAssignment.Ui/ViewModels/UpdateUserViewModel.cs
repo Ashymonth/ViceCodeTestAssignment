@@ -6,6 +6,7 @@ using Prism.Services.Dialogs;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using CrudTestAssignment.Api.Api.V1.Models;
 
 namespace CrudTestAssignment.Ui.ViewModels
 {
@@ -13,7 +14,7 @@ namespace CrudTestAssignment.Ui.ViewModels
     {
         private readonly IApiService _apiService;
 
-        private User _user;
+        private UserModel _user;
 
         private string _errorMessage;
 
@@ -63,7 +64,7 @@ namespace CrudTestAssignment.Ui.ViewModels
                     ErrorMessage = "Username is not correct or user does not exist";
                 else
                 {
-                    var dialogParameter = new DialogParameters { { nameof(User), result } };
+                    var dialogParameter = new DialogParameters { { nameof(UserModel), result } };
 
                     OnRequestClose(new DialogResult(ButtonResult.OK, dialogParameter));
                 }
@@ -90,7 +91,7 @@ namespace CrudTestAssignment.Ui.ViewModels
 
         public void OnDialogOpened(IDialogParameters parameters)
         {
-            parameters.TryGetValue<User>(nameof(User), out var user);
+            parameters.TryGetValue<UserModel>(nameof(UserModel), out var user);
 
             _user = user ?? throw new ArgumentNullException(nameof(user));
 
