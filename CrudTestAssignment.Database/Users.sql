@@ -1,6 +1,10 @@
 ﻿CREATE TABLE [dbo].[Users]
 (
-	[id] int primary key identity not null,
-	[name] nvarchar(max) not null ,
-	[createdDate] datetime not null
+	[id] int not null identity primary key,
+	[name] nvarchar(64) not null ,
+	[createdDate] datetime not null default(GetDate())
 )
+
+GO
+
+CREATE UNIQUE INDEX [IX_Users_Name] ON [dbo].[Users] ([name]);

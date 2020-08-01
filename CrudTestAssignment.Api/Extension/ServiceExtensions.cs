@@ -1,6 +1,4 @@
-﻿using CrudTestAssignment.DAL.Models;
-using CrudTestAssignment.Log;
-using Microsoft.Extensions.Configuration;
+﻿using CrudTestAssignment.Log;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
@@ -11,15 +9,6 @@ namespace CrudTestAssignment.Api.Extension
 {
     public static class ServiceExtensions
     {
-        /// <summary>
-        /// Adds a connection to the sql server
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configuration"></param>
-        public static void AddSqlConnection(this IServiceCollection services, IConfiguration configuration) =>
-            services.Configure<ConnectionStringOptions>(options =>
-                options.ConnectionString = configuration.GetConnectionString("DefaultConnection"));
-
         /// <summary>
         /// Adds a logging service
         /// </summary>

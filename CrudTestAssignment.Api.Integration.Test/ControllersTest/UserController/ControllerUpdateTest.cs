@@ -4,6 +4,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using CrudTestAssignment.Api.Api.V1.Models;
 using Xunit;
 
 namespace CrudTestAssignment.Api.Integration.Test.ControllersTest.UserController

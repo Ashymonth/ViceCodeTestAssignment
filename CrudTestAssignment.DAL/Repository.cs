@@ -1,5 +1,5 @@
-﻿using CrudTestAssignment.DAL.Models;
-using Microsoft.Extensions.Options;
+﻿using CrudTestAssignment.DAL.Exceptions;
+using CrudTestAssignment.DAL.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,65 +9,59 @@ using System.Threading.Tasks;
 
 namespace CrudTestAssignment.DAL
 {
-    public interface IRepository
-    {
-        Task<int> CreateAsync(User user, CancellationToken cancellationToken);
-
-        Task<User> GetByNameAsync(string userName, CancellationToken cancellationToken);
-
-        Task<User> GetAsync(int userId, CancellationToken cancellationToken);
-
-        Task<IEnumerable<User>> GetAsync(CancellationToken cancellationToken);
-
-        Task UpdateAsync(int userId, string name, CancellationToken cancellationToken);
-
-        Task DeleteAsync(int userId, CancellationToken cancellationToken);
-       
-    }
-
     public class Repository : IRepository
     {
         private readonly string _connectionString;
 
-        private const string AddCommand = @"insert into [dbo].[Users] ([name],[createdDate])
-                                            values(@name,@createdDate) select scope_identity();";
+        private const string AddUserProcedureName = "AddUser";
 
-        private const string GetByIdCommand = @"select [id], [name], [createdDate] 
-                                                from [dbo].[Users] 
-                                                where [id] = @userId";
+        private const string GetByIdProcedureName = "GetUserById";
 
-        private const string GetByNameCommand = @"select [id], [name], [createdDate] 
-                                                  from [dbo].[Users] 
-                                                  where [name] = @userName";
+        private const string GetAllProcedureName = "GetAllUsers";
 
-        private const string GetAllCommand = @"select [id], [name], [createdDate] 
-                                               from [dbo].[Users]";
+        private const string GetByNameProcedureName = "GetUserByName";
 
-        private const string UpdateCommand = @"update [dbo].[Users]
-                                               set [name] = @name
-                                               where [id] = @id";
+        private const string UpdateProcedureName = "UpdateUser";
 
-        private const string DeleteCommand = @"delete [dbo].[Users] where [id] = @id";
+        private const string DeleteProcedureName = @"DeleteUser";
 
-        public Repository(IOptions<ConnectionStringOptions> options)
+        public Repository(string connectionString)
         {
-            _connectionString = options.Value.ConnectionString;
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(connectionString));
+
+            _connectionString = connectionString;
         }
 
-        public async Task<int> CreateAsync(User user, CancellationToken cancellationToken)
+        public async Task<User> CreateAsync(User user, CancellationToken cancellationToken)
         {
-            await using (var connection = new SqlConnection(_connectionString))
+            try
             {
-                await connection.OpenAsync(cancellationToken);
-
-                await using (var command = new SqlCommand(AddCommand, connection))
+                await using (var connection = new SqlConnection(_connectionString))
                 {
-                    command.Parameters.AddWithValue("name", user.Name);
-                    command.Parameters.AddWithValue("createdDate", user.CreatedDate);
+                    await connection.OpenAsync(cancellationToken);
 
-                    var result = await command.ExecuteScalarAsync(cancellationToken);
-                    return Convert.ToInt32(result);
+                    await using (var command = new SqlCommand(AddUserProcedureName, connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        command.Parameters.AddWithValue("name", user.Name);
+                        command.Parameters.AddWithValue("createdDate", user.CreatedDate);
+
+                        var result = await command.ExecuteScalarAsync(cancellationToken);
+
+                        user.Id = Convert.ToInt32(result);
+
+                        return user;
+                    }
                 }
+            }
+            catch (SqlException ex)
+            {
+                if (ex.Number == 2601)
+                    throw new DuplicateUserNameException($"User with name {user.Name} already exist");
+                
+                throw;
             }
         }
 
@@ -77,8 +71,10 @@ namespace CrudTestAssignment.DAL
             {
                 await connection.OpenAsync(cancellationToken);
 
-                await using (var command = new SqlCommand(GetByNameCommand, connection))
+                await using (var command = new SqlCommand(GetByNameProcedureName, connection))
                 {
+                    command.CommandType = CommandType.StoredProcedure;
+
                     command.Parameters.AddWithValue("userName", userName);
 
                     await using (var result = await command.ExecuteReaderAsync(cancellationToken))
@@ -97,14 +93,16 @@ namespace CrudTestAssignment.DAL
             return null;
         }
 
-        public async Task<User> GetAsync(int userId, CancellationToken cancellationToken)
+        public async Task<User> GetByIdAsync(int userId, CancellationToken cancellationToken)
         {
             await using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
 
-                await using (var command = new SqlCommand(GetByIdCommand, connection))
+                await using (var command = new SqlCommand(GetByIdProcedureName, connection))
                 {
+                    command.CommandType = CommandType.StoredProcedure;
+
                     command.Parameters.AddWithValue("userId", userId);
 
                     await using (var result = await command.ExecuteReaderAsync(cancellationToken))
@@ -123,7 +121,7 @@ namespace CrudTestAssignment.DAL
             return null;
         }
 
-        public async Task<IEnumerable<User>> GetAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken)
         {
             var users = default(List<User>);
 
@@ -131,8 +129,10 @@ namespace CrudTestAssignment.DAL
             {
                 await connection.OpenAsync(cancellationToken);
 
-                await using (var command = new SqlCommand(GetAllCommand, connection))
+                await using (var command = new SqlCommand(GetAllProcedureName, connection))
                 {
+                    command.CommandType = CommandType.StoredProcedure;
+
                     await using (var result = await command.ExecuteReaderAsync(cancellationToken))
                     {
                         if (result.HasRows)
@@ -157,8 +157,10 @@ namespace CrudTestAssignment.DAL
             {
                 await connection.OpenAsync(cancellationToken);
 
-                await using (var command = new SqlCommand(UpdateCommand, connection))
+                await using (var command = new SqlCommand(UpdateProcedureName, connection))
                 {
+                    command.CommandType = CommandType.StoredProcedure;
+
                     command.Parameters.AddWithValue("id", userId);
 
                     command.Parameters.AddWithValue("name", name);
@@ -174,8 +176,10 @@ namespace CrudTestAssignment.DAL
             {
                 await connection.OpenAsync(cancellationToken);
 
-                await using (var command = new SqlCommand(DeleteCommand, connection))
+                await using (var command = new SqlCommand(DeleteProcedureName, connection))
                 {
+                    command.CommandType = CommandType.StoredProcedure;
+
                     command.Parameters.AddWithValue("id", userId);
 
                     await command.ExecuteNonQueryAsync(cancellationToken);

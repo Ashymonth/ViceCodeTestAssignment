@@ -24,15 +24,15 @@ namespace CrudTestAssignment.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+
             services.AddSwagger();
 
             services.AddOptions();
 
             services.AddLoggerService();
 
-            services.AddSqlConnection(Configuration);
-
-            services.AddTransient<IRepository, Repository>();
+            services.AddTransient<IRepository, Repository>(provider => new Repository(connectionString));
 
             services.AddControllers();
         }

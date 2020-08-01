@@ -17,4 +17,10 @@
     <ProjectReference Include="..\CrudTestAssignment.Log\CrudTestAssignment.Log.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="CrudTestAssignment.Api.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
+using CrudTestAssignment.Api.Api.V1.Models;
 
 namespace CrudTestAssignment.Api.Api.V1.Controllers
 {
@@ -54,7 +55,7 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
                 Name = model.Name
 
             };
-            user.Id = await _repository.CreateAsync(user, cancellationToken);
+            user = await _repository.CreateAsync(user, cancellationToken);
 
             return Created(Url.RouteUrl("GetByName", new { userName = user.Name }), user);
         }
@@ -99,7 +100,7 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> GetAllUsersAsync(CancellationToken cancellationToken)
         {
-            var result = await _repository.GetAsync(cancellationToken);
+            var result = await _repository.GetAllAsync(cancellationToken);
             if (result != null)
                 return Ok(result);
 
@@ -132,7 +133,7 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
                 return BadRequest("Model was not valid");
             }
 
-            var user = await _repository.GetAsync(userId, cancellationToken);
+            var user = await _repository.GetByIdAsync(userId, cancellationToken);
             if (user == null)
             {
                 _logger.LogError($"User with id {userId} not found");
@@ -161,7 +162,7 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteUser(int userId, CancellationToken cancellationToken)
         {
-            var user = await _repository.GetAsync(userId, cancellationToken);
+            var user = await _repository.GetByIdAsync(userId, cancellationToken);
             if (user == null)
             {
                 _logger.LogError($"User with id {userId} not found");

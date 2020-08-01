@@ -4,12 +4,70 @@
         <name>CrudTestAssignment.Api</name>
     </assembly>
     <members>
-        <member name="M:CrudTestAssignment.Api.Extension.ServiceExtensions.AddSqlConnection(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="M:CrudTestAssignment.Api.Api.V1.Controllers.UsersV1Controller.CreateUser(CrudTestAssignment.Api.Api.V1.Models.UserViewModel,System.Threading.CancellationToken)">
             <summary>
-            Adds a connection to the sql server
+            Adds user to the database and send his to client.
             </summary>
-            <param name="services"></param>
-            <param name="configuration"></param>
+            <remarks>
+            Get/api/v1/users/createUser{"name" : "example"}
+            </remarks>
+            <param name="model">A user to add view model</param>
+            <param name="cancellationToken">Cancel operation</param>
+            <response code="201">If user name not null or whitespace</response>
+            <response code="400">If user name null or whitespace</response>
+            <returns></returns>
+        </member>
+        <member name="M:CrudTestAssignment.Api.Api.V1.Controllers.UsersV1Controller.GetUserByNameAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Returns the user from the database.
+            </summary>
+            <remarks>
+            Get/api/v1/users/userId
+            </remarks>
+            <param name="userName">A user to return</param>
+            <param name="cancellationToken">Cancel operation</param>
+            <response code="200">If the user was found</response>
+            <response code="404">If the user was not found</response>
+            <returns></returns>
+        </member>
+        <member name="M:CrudTestAssignment.Api.Api.V1.Controllers.UsersV1Controller.GetAllUsersAsync(System.Threading.CancellationToken)">
+            <summary>
+            Returns all users from the database.
+            </summary>
+            <remarks>
+            Get/api/v1/users/all
+            </remarks>
+            <param name="cancellationToken">Cancel operation</param>
+            <response code="200">If the database is not empty</response>
+            <response code="404">If the database is empty</response>
+        </member>
+        <member name="M:CrudTestAssignment.Api.Api.V1.Controllers.UsersV1Controller.UpdateUser(System.Int32,CrudTestAssignment.Api.Api.V1.Models.UserViewModel,System.Threading.CancellationToken)">
+            <summary>
+            Update the user in the database.
+            </summary>
+            <remarks>
+            Put/api/v1/users/userId
+            </remarks>
+            <param name="model">User view model</param>
+            <param name="cancellationToken">Cancel operation</param>
+            <param name="userId">User id</param>
+            <response code="200">If the user was found and updated</response>
+            <response code="400">If the user model was invalid</response>
+            <response code="404">If the user was not not found or not updated</response>
+            <returns></returns>
+        </member>
+        <member name="M:CrudTestAssignment.Api.Api.V1.Controllers.UsersV1Controller.DeleteUser(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Delete the user in the database.
+            </summary>
+            <remarks>
+            Delete/api/v1/users/userId
+            </remarks>
+            <param name="userId">User id</param>
+            <param name="cancellationToken">Cancel operation</param>
+            <response code="204">If the user was found and deleted</response>
+            <response code="404">If the user was not not found</response>
+            <returns></returns>
         </member>
         <member name="M:CrudTestAssignment.Api.Extension.ServiceExtensions.AddLoggerService(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
