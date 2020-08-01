@@ -56,6 +56,8 @@ namespace CrudTestAssignment.Ui.ViewModels
         {
             try
             {
+                ErrorMessage = "";
+
                 var result = await _apiService.UpdateUserAsync(_user.Id, _newUserName);
                 if (result == null)
                     ErrorMessage = "Username is not correct or user does not exist";
