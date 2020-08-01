@@ -1,15 +1,14 @@
-﻿using System;
+﻿using CrudTestAssignment.Api.Api.V1.Models;
+using CrudTestAssignment.Ui.Exceptions;
+using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using CrudTestAssignment.Api.Api.V1.Models;
-using CrudTestAssignment.Ui.Exceptions;
 
 namespace CrudTestAssignment.Ui.Services
 {
-    public interface IApiService
+    public interface IApiService : IDisposable
     {
         Task<UserModel> CreateUserAsync(string userName);
 
@@ -38,7 +37,7 @@ namespace CrudTestAssignment.Ui.Services
         {
             var user = new UserModel { Name = userName };
 
-            var response = await _httpClient.PostAsJsonAsync("users", user);
+            using var response = await _httpClient.PostAsJsonAsync("users", user);
             return response.StatusCode switch
             {
                 HttpStatusCode.BadRequest => throw new BadRequestException("Username must be at least 5 characters long and must not be empty"),
@@ -50,7 +49,7 @@ namespace CrudTestAssignment.Ui.Services
 
         public async Task<UserModel> GetUserByNameAsync(string userName)
         {
-            var response = await _httpClient.GetAsync($"users/{Uri.EscapeDataString(userName)}");
+            using var response = await _httpClient.GetAsync($"users/{Uri.EscapeDataString(userName)}");
             return response.StatusCode switch
             {
                 HttpStatusCode.NotFound => throw new NotFoundException("User with this name not found"),
@@ -61,7 +60,7 @@ namespace CrudTestAssignment.Ui.Services
 
         public async Task<IEnumerable<UserModel>> GetUsersAsync()
         {
-            var response = await _httpClient.GetAsync("users");
+            using var response = await _httpClient.GetAsync("users");
             return response.StatusCode switch
             {
                 HttpStatusCode.NoContent => throw new NotFoundException("The database is empty"),
@@ -72,9 +71,9 @@ namespace CrudTestAssignment.Ui.Services
 
         public async Task<UserModel> UpdateUserAsync(int userId, string newUserName)
         {
-            var user = new UserModel { Name = newUserName};
+            var user = new UserModel { Name = newUserName };
 
-            var response = await _httpClient.PutAsJsonAsync($"users/{Uri.EscapeDataString(userId.ToString())}", user);
+            using var response = await _httpClient.PutAsJsonAsync($"users/{Uri.EscapeDataString(userId.ToString())}", user);
             return response.StatusCode switch
             {
                 HttpStatusCode.BadRequest => throw new BadRequestException("Username must be at least 5 characters long and must not be empty"),
@@ -87,13 +86,18 @@ namespace CrudTestAssignment.Ui.Services
 
         public async Task<bool> DeleteUserAsync(int userId)
         {
-            var response = await _httpClient.DeleteAsync($"users/{Uri.EscapeDataString(userId.ToString())}");
+            using var response = await _httpClient.DeleteAsync($"users/{Uri.EscapeDataString(userId.ToString())}");
             return response.StatusCode switch
             {
                 HttpStatusCode.NotFound => throw new NotFoundException("User not found"),
                 HttpStatusCode.NoContent => true,
                 _ => throw new ServerRequestException("Request exception")
             };
+        }
+
+        public void Dispose()
+        {
+            _httpClient?.Dispose();
         }
     }
 }
