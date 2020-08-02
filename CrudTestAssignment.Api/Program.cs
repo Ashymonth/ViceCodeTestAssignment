@@ -17,6 +17,7 @@ namespace CrudTestAssignment.Api
                 {
                     builder.ClearProviders();
                     builder.AddConsole();
+                    builder.AddDebug();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

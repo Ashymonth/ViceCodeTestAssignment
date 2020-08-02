@@ -71,7 +71,7 @@ namespace CrudTestAssignment.Ui.ViewModels
 
         private bool CanExecuteUpdateUserCommand()
         {
-            return !string.IsNullOrWhiteSpace(_newUserName) && _userName.Trim().Length >= 5;
+            return !string.IsNullOrWhiteSpace(_newUserName);
         }
 
         #region Dialog

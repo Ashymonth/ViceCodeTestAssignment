@@ -21,7 +21,7 @@ namespace CrudTestAssignment.DAL
             _connectionString = connectionString;
         }
 
-        public async Task<UserEntity> CreateAsync(UserEntity user, CancellationToken cancellationToken)
+        public async ValueTask<UserEntity> CreateAsync(UserEntity user, CancellationToken cancellationToken)
         {
             try
             {
@@ -49,13 +49,13 @@ namespace CrudTestAssignment.DAL
             catch (SqlException ex)
             {
                 if (ex.Number == 2601)
-                    throw new DuplicateUserNameException($"UserEntity with name {user.Name} already exist");
+                    throw new DuplicateUserNameException(string.Concat(ErrorMessages.UserNameExistPlaceHolder,user.Name));
                 
                 throw;
             }
         }
 
-        public async Task<UserEntity> GetByNameAsync(string userName, CancellationToken cancellationToken)
+        public async ValueTask<UserEntity> GetByNameAsync(string userName, CancellationToken cancellationToken)
         {
             await using (var connection = new SqlConnection(_connectionString))
             {
@@ -83,7 +83,7 @@ namespace CrudTestAssignment.DAL
             return null;
         }
 
-        public async Task<UserEntity> GetByIdAsync(int userId, CancellationToken cancellationToken)
+        public async ValueTask<UserEntity> GetByIdAsync(int userId, CancellationToken cancellationToken)
         {
             await using (var connection = new SqlConnection(_connectionString))
             {
@@ -111,7 +111,7 @@ namespace CrudTestAssignment.DAL
             return null;
         }
 
-        public async Task<IEnumerable<UserEntity>> GetAllAsync(CancellationToken cancellationToken)
+        public async ValueTask<IEnumerable<UserEntity>> GetAllAsync(CancellationToken cancellationToken)
         {
             var users = default(List<UserEntity>);
 
@@ -141,7 +141,7 @@ namespace CrudTestAssignment.DAL
             return users;
         }
 
-        public async Task UpdateAsync(int userId, string name, CancellationToken cancellationToken)
+        public async ValueTask UpdateAsync(int userId, string name, CancellationToken cancellationToken)
         {
             await using (var connection = new SqlConnection(_connectionString))
             {
@@ -160,7 +160,7 @@ namespace CrudTestAssignment.DAL
             }
         }
 
-        public async Task DeleteAsync(int userId, CancellationToken cancellationToken)
+        public async ValueTask DeleteAsync(int userId, CancellationToken cancellationToken)
         {
             await using (var connection = new SqlConnection(_connectionString))
             {

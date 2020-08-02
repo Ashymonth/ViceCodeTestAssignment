@@ -80,6 +80,7 @@
                 <TextBlock
                     Margin="10"
                     VerticalAlignment="Center"
+                    Foreground="Red"
                     Text="{Binding Path=ErrorMessage}" />
             </StatusBarItem>
 

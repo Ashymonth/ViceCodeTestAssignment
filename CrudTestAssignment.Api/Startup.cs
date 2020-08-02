@@ -1,4 +1,5 @@
 using CrudTestAssignment.Api.Extension;
+using CrudTestAssignment.Api.Middleware;
 using CrudTestAssignment.DAL;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -38,6 +39,8 @@ namespace CrudTestAssignment.Api
             }
 
             app.UseRouting();
+            
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

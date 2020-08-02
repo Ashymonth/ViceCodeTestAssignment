@@ -59,7 +59,7 @@ namespace CrudTestAssignment.Ui.ViewModels
 
         private bool CanExecuteAddUserCommand()
         {
-            return !string.IsNullOrWhiteSpace(_userName) && _userName.Trim().Length >= 5;
+            return !string.IsNullOrWhiteSpace(_userName);
         }
 
         #region Dialog

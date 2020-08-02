@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
@@ -46,40 +44,28 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> CreateUser([FromBody] UserModel model, CancellationToken cancellationToken)
+        public async ValueTask<IActionResult> CreateUser([FromBody] UserModel model, CancellationToken cancellationToken)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    _logger.LogError("Model was invalid");
-                    return BadRequest("User name is required");
-                }
-
-                var existUser = await _repository.GetByNameAsync(model.Name, cancellationToken);
-                if (existUser != null)
-                {
-                    _logger.LogError("User with this name already exist");
-                    return Conflict("User with this name already exist");
-                }
-
-                var user = Mapper.Mapper.MapToEntity(model);
-
-                user = await _repository.CreateAsync(user, cancellationToken);
-
-                return Created(Url.RouteUrl("GetByName", new {userName = user.Name}), Mapper.Mapper.MapToModel(user));
-            }
-            catch (DuplicateNameException)
-            {
-                _logger.LogError("User with this name already exist");
-                return Conflict("User with this name already exist");
+                _logger.LogError(ErrorMessages.ModelIsNotValid);
+                
+                return BadRequest(ErrorMessages.ModelIsNotValid);
             }
 
-            catch (SqlException ex)
+            var existUser = await _repository.GetByNameAsync(model.Name, cancellationToken);
+            if (existUser != null)
             {
-                _logger.LogCritical(ex.Message);
-                return StatusCode(500,"Server error");
+                _logger.LogError(string.Format(ErrorMessages.UserWithThisNameExistPlaceHolder,model.Name));
+
+                return Conflict(string.Format(ErrorMessages.UserWithThisNameExistPlaceHolder,model.Name));
             }
+
+            var user = Mapper.Mapper.MapToEntity(model);
+
+            user = await _repository.CreateAsync(user, cancellationToken);
+
+            return Created(Url.RouteUrl("GetByName", new { userName = user.Name }), Mapper.Mapper.MapToModel(user));
         }
 
         /// <summary>
@@ -96,15 +82,15 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
         [HttpGet("{userName}", Name = "GetByName")]
         [ProducesResponseType(typeof(UserModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetUserByNameAsync(string userName, CancellationToken cancellationToken)
+        public async ValueTask<IActionResult> GetUserByNameAsync(string userName, CancellationToken cancellationToken)
         {
             var result = await _repository.GetByNameAsync(userName, cancellationToken);
             if (result != null)
                 return Ok(Mapper.Mapper.MapToModel(result));
 
-            _logger.LogError($"User with with name {userName} not found");
+            _logger.LogError(string.Format(ErrorMessages.UserNameNotFoundPlaceHolder,userName));
 
-            return NotFound($"User with with name {userName} not found");
+            return NotFound(string.Format(ErrorMessages.UserNameNotFoundPlaceHolder,userName));
         }
 
         /// <summary>
@@ -120,7 +106,7 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<UserModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> GetAllUsersAsync(CancellationToken cancellationToken)
+        public async ValueTask<IActionResult> GetAllUsersAsync(CancellationToken cancellationToken)
         {
             var result = await _repository.GetAllAsync(cancellationToken);
             if (result != null)
@@ -151,46 +137,34 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
-        public async Task<IActionResult> UpdateUser(int userId, [FromBody] UserModel model, CancellationToken cancellationToken)
+        public async ValueTask<IActionResult> UpdateUser(int userId, [FromBody] UserModel model, CancellationToken cancellationToken)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    _logger.LogError("Model was not valid");
-                    return BadRequest("Model was not valid");
-                }
+                _logger.LogError(ErrorMessages.ModelIsNotValid);
 
-                var user = await _repository.GetByIdAsync(userId, cancellationToken);
-                if (user == null)
-                {
-                    _logger.LogError($"User with id {userId} not found");
-                    return NotFound($"User with id {userId} not found");
-                }
-
-                var existUser = await _repository.GetByNameAsync(model.Name, cancellationToken);
-                if (existUser != null)
-                {
-                    _logger.LogError("User with this name already exist");
-                    return Conflict("User with this name already exist");
-                }
-
-                await _repository.UpdateAsync(user.Id, model.Name, cancellationToken);
-                user.Name = model.Name;
-
-                return Ok(Mapper.Mapper.MapToModel(user));
-            }
-            catch (DuplicateNameException e)
-            {
-                _logger.LogError("User with this name already exist");
-                return Conflict("User with this name already exist");
+                return BadRequest(ErrorMessages.ModelIsNotValid);
             }
 
-            catch (SqlException e)
+            var user = await _repository.GetByIdAsync(userId, cancellationToken);
+            if (user == null)
             {
-                _logger.LogWarning(e.Message);
-                return StatusCode(500, "Server error");
+                _logger.LogError(string.Format(ErrorMessages.UserIdNotFoundPlaceHolder, userId));
+                return NotFound(string.Format(ErrorMessages.UserIdNotFoundPlaceHolder, userId));
             }
+
+            var existUser = await _repository.GetByNameAsync(model.Name, cancellationToken);
+            if (existUser != null)
+            {
+                _logger.LogError(ErrorMessages.UserWithThisNameExistPlaceHolder);
+             
+                return Conflict(ErrorMessages.UserWithThisNameExistPlaceHolder);
+            }
+
+            await _repository.UpdateAsync(user.Id, model.Name, cancellationToken);
+            user.Name = model.Name;
+
+            return Ok(Mapper.Mapper.MapToModel(user));
         }
 
         /// <summary>
@@ -207,13 +181,14 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
         [HttpDelete("{userId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteUser(int userId, CancellationToken cancellationToken)
+        public async ValueTask<IActionResult> DeleteUser(int userId, CancellationToken cancellationToken)
         {
             var user = await _repository.GetByIdAsync(userId, cancellationToken);
             if (user == null)
             {
-                _logger.LogError($"User with id {userId} not found");
-                return NotFound("User not found");
+                _logger.LogError(string.Format(ErrorMessages.UserIdNotFoundPlaceHolder,userId));
+                
+                return NotFound();
             }
 
             await _repository.DeleteAsync(user.Id, cancellationToken);

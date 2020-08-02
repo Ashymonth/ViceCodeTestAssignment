@@ -25,7 +25,10 @@
 
         <StackPanel Margin="10">
 
-            <TextBlock Margin="10" Text="{Binding Path=ResultMessage}" />
+            <TextBlock
+                Margin="10"
+                Foreground="IndianRed"
+                Text="{Binding Path=ResultMessage}" />
 
             <TextBlock Margin="10" Text="Enter your username to get user" />
 
