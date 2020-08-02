@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CrudTestAssignment.DAL
+﻿namespace CrudTestAssignment.DAL
 {
     internal static class StoredProcedures
     {

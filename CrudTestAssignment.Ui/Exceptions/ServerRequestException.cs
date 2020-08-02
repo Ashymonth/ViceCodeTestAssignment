@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CrudTestAssignment.Ui
+namespace CrudTestAssignment.Ui.Exceptions
 {
     public class ServerRequestException : Exception
     {

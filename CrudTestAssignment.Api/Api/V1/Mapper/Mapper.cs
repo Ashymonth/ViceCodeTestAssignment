@@ -1,9 +1,9 @@
 ﻿
+using CrudTestAssignment.Api.Api.V1.Models;
+using CrudTestAssignment.DAL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CrudTestAssignment.Api.Api.V1.Models;
-using CrudTestAssignment.DAL.Entities;
 
 namespace CrudTestAssignment.Api.Api.V1.Mapper
 {

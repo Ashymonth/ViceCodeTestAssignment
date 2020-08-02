@@ -1,6 +1,6 @@
-﻿using System.Net;
+﻿using Microsoft.AspNetCore.Mvc.Testing;
+using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
 namespace CrudTestAssignment.Api.Integration.Test.ControllersTest.UserController

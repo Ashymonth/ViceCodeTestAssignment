@@ -1,4 +1,5 @@
 ﻿using CrudTestAssignment.Api.Api.V1.Models;
+using CrudTestAssignment.Ui.Exceptions;
 using CrudTestAssignment.Ui.Services;
 using Prism.Commands;
 using Prism.Mvvm;
