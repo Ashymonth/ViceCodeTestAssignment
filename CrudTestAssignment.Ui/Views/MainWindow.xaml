@@ -51,11 +51,6 @@
                 Command="{Binding Path=DeleteUserCommand}"
                 Content="Delete user" />
 
-            <TextBlock
-                Margin="10"
-                VerticalAlignment="Center"
-                Text="{Binding Path=ErrorMessage}" />
-
         </StackPanel>
 
         <ListView
@@ -75,12 +70,17 @@
         <StatusBar Grid.Row="2">
 
             <StatusBarItem>
-
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Margin="10" Text="Total items:" />
                     <TextBlock Margin="10" Text="{Binding Path=Users.Count}" />
                 </StackPanel>
+            </StatusBarItem>
 
+            <StatusBarItem>
+                <TextBlock
+                    Margin="10"
+                    VerticalAlignment="Center"
+                    Text="{Binding Path=ErrorMessage}" />
             </StatusBarItem>
 
             <StatusBarItem>
@@ -92,6 +92,7 @@
                     IsActive="{Binding Path=ProgressRingStatus}"
                     IsLarge="False" />
             </StatusBarItem>
+
         </StatusBar>
     </Grid>
 </mah:MetroWindow>

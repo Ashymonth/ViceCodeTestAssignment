@@ -105,12 +105,14 @@ namespace CrudTestAssignment.Ui.ViewModels
                 var result = await _apiService.GetUsersAsync();
                 if (result != null)
                     Users.AddRange(result);
-
-                ProgressRingStatus = false;
             }
             catch (ServerRequestException ex)
             {
                 ErrorMessage = ex.Message;
+            }
+            finally
+            {
+                ProgressRingStatus = false;
             }
         }
 
