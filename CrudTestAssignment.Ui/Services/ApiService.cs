@@ -42,6 +42,7 @@ namespace CrudTestAssignment.Ui.Services
             {
                 HttpStatusCode.BadRequest => throw new BadRequestException("Username must be at least 5 characters long and must not be empty"),
                 HttpStatusCode.Conflict => throw new ConflictException("User with this name already exist"),
+                HttpStatusCode.InternalServerError => throw new ServerRequestException("ServerError"),
                 HttpStatusCode.Created => await response.Content.ReadAsAsync<UserModel>(),
                 _ => throw new ServerRequestException("Request exception")
             };
@@ -79,6 +80,7 @@ namespace CrudTestAssignment.Ui.Services
                 HttpStatusCode.BadRequest => throw new BadRequestException("Username must be at least 5 characters long and must not be empty"),
                 HttpStatusCode.Conflict => throw new ConflictException("User with this name already exist"),
                 HttpStatusCode.NotFound => throw new NotFoundException("User with this name not found"),
+                HttpStatusCode.InternalServerError => throw new ServerRequestException("ServerError"),
                 HttpStatusCode.OK => await response.Content.ReadAsAsync<UserModel>(),
                 _ => throw new ServerRequestException("Request exception")
             };

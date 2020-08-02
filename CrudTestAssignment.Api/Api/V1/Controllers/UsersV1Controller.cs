@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Net.Mime;
 using System.Threading;
@@ -38,11 +39,13 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
         /// <response code="201">If user name not null or whitespace</response>
         /// <response code="400">If user name null or whitespace</response>
         /// <response code="409">If user with this name already exist</response>
+        /// <response code="500">Sql exception</response>
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(UserModel), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateUser([FromBody] UserModel model, CancellationToken cancellationToken)
         {
             try
@@ -64,12 +67,18 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
 
                 user = await _repository.CreateAsync(user, cancellationToken);
 
-                return Created(Url.RouteUrl("GetByName", new { userName = user.Name }), Mapper.Mapper.MapToModel(user));
+                return Created(Url.RouteUrl("GetByName", new {userName = user.Name}), Mapper.Mapper.MapToModel(user));
             }
-            catch (SqlException e)
+            catch (DuplicateNameException)
             {
-                _logger.LogWarning("User with this name already exist");
+                _logger.LogError("User with this name already exist");
                 return Conflict("User with this name already exist");
+            }
+
+            catch (SqlException ex)
+            {
+                _logger.LogCritical(ex.Message);
+                return StatusCode(500,"Server error");
             }
         }
 
@@ -133,12 +142,14 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
         /// <response code="400">If the user model was invalid</response>
         /// <response code="404">If the user was not not found or not updated</response>
         /// <response code="409">If user with this name already exist</response>
+        /// <response code="500">Sql exception</response>
         /// <returns></returns>
         [HttpPut("{userId}")]
         [ProducesResponseType(typeof(UserModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
         public async Task<IActionResult> UpdateUser(int userId, [FromBody] UserModel model, CancellationToken cancellationToken)
         {
@@ -157,7 +168,7 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
                     return NotFound($"User with id {userId} not found");
                 }
 
-                var existUser = await _repository.GetByNameAsync(model.Name,cancellationToken);
+                var existUser = await _repository.GetByNameAsync(model.Name, cancellationToken);
                 if (existUser != null)
                 {
                     _logger.LogError("User with this name already exist");
@@ -169,10 +180,16 @@ namespace CrudTestAssignment.Api.Api.V1.Controllers
 
                 return Ok(Mapper.Mapper.MapToModel(user));
             }
+            catch (DuplicateNameException e)
+            {
+                _logger.LogError("User with this name already exist");
+                return Conflict("User with this name already exist");
+            }
+
             catch (SqlException e)
             {
-                _logger.LogWarning("User with this name already exist");
-                return Conflict("User with this name already exist");
+                _logger.LogWarning(e.Message);
+                return StatusCode(500, "Server error");
             }
         }
 
