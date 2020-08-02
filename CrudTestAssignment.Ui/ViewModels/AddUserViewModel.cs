@@ -1,11 +1,10 @@
-﻿using CrudTestAssignment.Ui.Services;
+﻿using CrudTestAssignment.Api.Api.V1.Models;
+using CrudTestAssignment.Ui.Services;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
-using CrudTestAssignment.Api.Api.V1.Models;
 
 namespace CrudTestAssignment.Ui.ViewModels
 {

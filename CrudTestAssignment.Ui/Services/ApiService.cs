@@ -8,19 +8,6 @@ using System.Threading.Tasks;
 
 namespace CrudTestAssignment.Ui.Services
 {
-    public interface IApiService : IDisposable
-    {
-        Task<UserModel> CreateUserAsync(string userName);
-
-        Task<UserModel> GetUserByNameAsync(string userName);
-
-        Task<IEnumerable<UserModel>> GetUsersAsync();
-
-        Task<UserModel> UpdateUserAsync(int userId, string newUserName);
-
-        Task<bool> DeleteUserAsync(int userId);
-    }
-
     public class ApiService : IApiService
     {
         private readonly HttpClient _httpClient;
@@ -40,11 +27,11 @@ namespace CrudTestAssignment.Ui.Services
             using var response = await _httpClient.PostAsJsonAsync("users", user);
             return response.StatusCode switch
             {
-                HttpStatusCode.BadRequest => throw new BadRequestException("Username must be at least 5 characters long and must not be empty"),
-                HttpStatusCode.Conflict => throw new ConflictException("User with this name already exist"),
-                HttpStatusCode.InternalServerError => throw new ServerRequestException("ServerError"),
+                HttpStatusCode.BadRequest => throw new BadRequestException(ErrorMessages.UserNameIsEmpty),
+                HttpStatusCode.Conflict => throw new ConflictException(string.Concat(ErrorMessages.UserNameExistPlaceHolder,userName)),
+                HttpStatusCode.InternalServerError => throw new ServerRequestException(ErrorMessages.ServerException),
                 HttpStatusCode.Created => await response.Content.ReadAsAsync<UserModel>(),
-                _ => throw new ServerRequestException("Request exception")
+                _ => throw new ServerRequestException(ErrorMessages.RequestException)
             };
         }
 
@@ -53,9 +40,10 @@ namespace CrudTestAssignment.Ui.Services
             using var response = await _httpClient.GetAsync($"users/{Uri.EscapeDataString(userName)}");
             return response.StatusCode switch
             {
-                HttpStatusCode.NotFound => throw new NotFoundException("User with this name not found"),
+                HttpStatusCode.NotFound => throw new NotFoundException(string.Format(ErrorMessages.UserNameNotFoundPlaceHolder,userName)),
+                HttpStatusCode.InternalServerError => throw new ServerRequestException(ErrorMessages.ServerException),
                 HttpStatusCode.OK => await response.Content.ReadAsAsync<UserModel>(),
-                _ => throw new ServerRequestException("Request exception")
+                _ => throw new ServerRequestException(ErrorMessages.RequestException)
             };
         }
 
@@ -64,9 +52,10 @@ namespace CrudTestAssignment.Ui.Services
             using var response = await _httpClient.GetAsync("users");
             return response.StatusCode switch
             {
-                HttpStatusCode.NoContent => throw new NotFoundException("The database is empty"),
+                HttpStatusCode.NoContent => throw new NotFoundException(ErrorMessages.DataBaseEmpty),
+                HttpStatusCode.InternalServerError => throw new ServerRequestException(ErrorMessages.ServerException),
                 HttpStatusCode.OK => await response.Content.ReadAsAsync<IEnumerable<UserModel>>(),
-                _ => throw new ServerRequestException("Request exception")
+                _ => throw new ServerRequestException(ErrorMessages.RequestException)
             };
         }
 
@@ -77,12 +66,12 @@ namespace CrudTestAssignment.Ui.Services
             using var response = await _httpClient.PutAsJsonAsync($"users/{Uri.EscapeDataString(userId.ToString())}", user);
             return response.StatusCode switch
             {
-                HttpStatusCode.BadRequest => throw new BadRequestException("Username must be at least 5 characters long and must not be empty"),
-                HttpStatusCode.Conflict => throw new ConflictException("User with this name already exist"),
-                HttpStatusCode.NotFound => throw new NotFoundException("User with this name not found"),
-                HttpStatusCode.InternalServerError => throw new ServerRequestException("ServerError"),
+                HttpStatusCode.BadRequest => throw new BadRequestException(ErrorMessages.UserNameIsEmpty),
+                HttpStatusCode.Conflict => throw new ConflictException(string.Format(ErrorMessages.UserNameExistPlaceHolder,newUserName)),
+                HttpStatusCode.NotFound => throw new NotFoundException(ErrorMessages.UserNameNotFound),
+                HttpStatusCode.InternalServerError => throw new ServerRequestException(ErrorMessages.ServerException),
                 HttpStatusCode.OK => await response.Content.ReadAsAsync<UserModel>(),
-                _ => throw new ServerRequestException("Request exception")
+                _ => throw new ServerRequestException(ErrorMessages.RequestException)
             };
         }
 
@@ -91,9 +80,10 @@ namespace CrudTestAssignment.Ui.Services
             using var response = await _httpClient.DeleteAsync($"users/{Uri.EscapeDataString(userId.ToString())}");
             return response.StatusCode switch
             {
-                HttpStatusCode.NotFound => throw new NotFoundException("User not found"),
+                HttpStatusCode.NotFound => throw new NotFoundException(ErrorMessages.UserNameNotFound),
+                HttpStatusCode.InternalServerError => throw new ServerRequestException(ErrorMessages.ServerException),
                 HttpStatusCode.NoContent => true,
-                _ => throw new ServerRequestException("Request exception")
+                _ => throw new ServerRequestException(ErrorMessages.ServerException)
             };
         }
 

@@ -4,9 +4,7 @@ using CrudTestAssignment.Ui.Views;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
-using System;
 using System.Collections.ObjectModel;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace CrudTestAssignment.Ui.ViewModels
@@ -34,11 +32,11 @@ namespace CrudTestAssignment.Ui.ViewModels
 
             GetUserCommand = new DelegateCommand(ExecuteGetUserCommand);
 
-            GetAllUsersCommand = new DelegateCommand(async ()=> await ExecuteGetAllUsersCommand());
+            GetAllUsersCommand = new DelegateCommand(async () => await ExecuteGetAllUsersCommand());
 
             UpdateUserCommand = new DelegateCommand(ExecuteUpdateUserCommand, CanExecuteCommand);
 
-            DeleteUserCommand = new DelegateCommand(async ()=> await ExecuteDeleteUserCommand(),CanExecuteCommand);
+            DeleteUserCommand = new DelegateCommand(async () => await ExecuteDeleteUserCommand(), CanExecuteCommand);
         }
 
         public ObservableCollection<UserModel> Users { get; set; }
@@ -78,14 +76,15 @@ namespace CrudTestAssignment.Ui.ViewModels
 
         private void ExecuteAddUserCommand()
         {
-            ErrorMessage = "";
-
             _dialogService.ShowDialog(nameof(AddUserView), new DialogParameters(), result =>
                  {
                      result.Parameters.TryGetValue<UserModel>(nameof(UserModel), out var user);
 
-                     if (result.Result == ButtonResult.OK && user != null)
-                         Users.Add(user);
+                     if (result.Result != ButtonResult.OK || user == null)
+                         return;
+
+                     Users.Add(user);
+                     ErrorMessage = "";
                  });
         }
 
@@ -96,8 +95,6 @@ namespace CrudTestAssignment.Ui.ViewModels
 
         private async Task ExecuteGetAllUsersCommand()
         {
-            ErrorMessage = "";
-
             try
             {
                 ProgressRingStatus = true;
@@ -118,8 +115,6 @@ namespace CrudTestAssignment.Ui.ViewModels
 
         private void ExecuteUpdateUserCommand()
         {
-            ErrorMessage = "";
-
             var index = Users.IndexOf(_selectedUser);
 
             var dialogParameter = new DialogParameters { { nameof(UserModel), _selectedUser } };
@@ -142,13 +137,11 @@ namespace CrudTestAssignment.Ui.ViewModels
 
         private async Task ExecuteDeleteUserCommand()
         {
-            ErrorMessage = "";
-
             try
             {
                 var result = await _apiService.DeleteUserAsync(_selectedUser.Id);
                 if (result == false)
-                    ErrorMessage = "User not found";
+                    ErrorMessage = ErrorMessages.UserNameNotFound;
                 else
                     Users.Remove(_selectedUser);
             }

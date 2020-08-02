@@ -47,7 +47,7 @@ namespace CrudTestAssignment.Ui.ViewModels
                 ResultMessage = "";
 
                 var result = await _apiService.GetUserByNameAsync(_userName);
-                ResultMessage = $"User with name: {result.Name} find";
+                ResultMessage = string.Format(ErrorMessages.UserNameNotFoundPlaceHolder,result.Name);
             }
             catch (ServerRequestException e)
             {
