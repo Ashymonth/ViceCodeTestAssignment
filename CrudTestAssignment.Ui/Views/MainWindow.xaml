@@ -26,6 +26,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal">
@@ -50,13 +51,6 @@
                 Command="{Binding Path=DeleteUserCommand}"
                 Content="Delete user" />
 
-            <mah:ProgressRing
-                Width="20"
-                Height="20"
-                Margin="5"
-                IsActive="{Binding Path=ProgressRingStatus}"
-                IsLarge="False" />
-
             <TextBlock
                 Margin="10"
                 VerticalAlignment="Center"
@@ -71,9 +65,33 @@
             SelectedItem="{Binding Path=SelectedUser}">
             <ListView.View>
                 <GridView>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=Id}" Header="User id" />
                     <GridViewColumn DisplayMemberBinding="{Binding Path=Name}" Header="User name" />
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=CreatedDate, StringFormat=g}" Header="Created date" />
                 </GridView>
             </ListView.View>
         </ListView>
+
+        <StatusBar Grid.Row="2">
+
+            <StatusBarItem>
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Margin="10" Text="Total items:" />
+                    <TextBlock Margin="10" Text="{Binding Path=Users.Count}" />
+                </StackPanel>
+
+            </StatusBarItem>
+
+            <StatusBarItem>
+                <mah:ProgressRing
+                    Width="20"
+                    Height="20"
+                    Margin="5"
+                    Foreground="{StaticResource MahApps.Brushes.SystemControlBackgroundChromeWhite}"
+                    IsActive="{Binding Path=ProgressRingStatus}"
+                    IsLarge="False" />
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </mah:MetroWindow>
